@@ -11,7 +11,7 @@ require('./passport-setup');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieSession({
-  secret: 'This is the session secret',
+  secret: 'This is the session secret', //TODO Possibly make this an env var
   resave: false,
   saveUninitialized: true
 }));
@@ -26,9 +26,17 @@ const isLoggedIn = (req, res, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => res.send('This is the root dir'));
+app.set('view engine', 'ejs');
+app.get('/', (req, res) => {
+    res.render('index.ejs');
+});
 app.get('/failed', (req, res) => res.send('You failed to log in!'));
-app.get('/home', isLoggedIn, (req, res) => res.send(`<h1>Welcome ${req.user.displayName}`));
+app.get('/home', isLoggedIn, (req, res) => {
+    res.render('home.ejs', {
+        name: req.user.displayName,
+        profileImg: req.user.photos[0].value
+    });
+});
 app.get('/auth', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/callback',
   passport.authenticate('google', { failureRedirect: '/failed' }),
