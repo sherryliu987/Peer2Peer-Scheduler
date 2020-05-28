@@ -1,0 +1,26 @@
+{
+  "name": "peer2peer-scheduler",
+  "version": "1.0.0",
+  "description": "A website to schedule tutoring sessions.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sherryliu987/Peer2Peer-Scheduler.git"
+  },
+  "author": "Sherry Liu, Leo Gagnon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sherryliu987/Peer2Peer-Scheduler/issues"
+  },
+  "homepage": "https://github.com/sherryliu987/Peer2Peer-Scheduler#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-session": "^1.4.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "passport": "^0.4.1"
+  }
+}
