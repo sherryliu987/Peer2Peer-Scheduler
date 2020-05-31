@@ -45,10 +45,4 @@ app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 });
-
-app.get('/api/click', (req, res) => {
-    console.log('Click requested by');
-    console.log(req.user);
-});
-
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
