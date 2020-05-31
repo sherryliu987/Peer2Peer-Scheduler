@@ -1,48 +1,34 @@
 const express = require('express');
-const passport = require('passport');
-const bodyParser = require('body-parser');
-const cookieSession = require('cookie-session');
-const app = express();
-const PORT = process.env.PORT || 3000;
-require('dotenv').config();
-require('./passport-setup');
+const passport = require('passport'); //Used for authentication
+const bodyParser = require('body-parser'); //Allows incoming request bodies to be easily available in req.body
+const cookieSession = require('cookie-session'); //Allows for the storage of cookies, keeping users signed in
+const app = express(); //Web framework
+const PORT = process.env.PORT || 3000; //The port for the server to run on. If deployed, it will use that port.
+require('dotenv').config(); //Creates environment variables
+require('./passport-setup'); //Configures passport to authenticate with google and use mongodb
 
-app.use(bodyParser.urlencoded({ extended: false }));
+const userRouter = require('./routes/user.js');
+
+app.use(bodyParser.urlencoded({ extended: false })); //Enables body-parser
 app.use(bodyParser.json());
 app.use(cookieSession({
     secret: 'This is the session secret', //TODO Possibly make this an env var
     resave: false,
     saveUninitialized: true
 }));
-
-const isLoggedIn = (req, res, next) => {
-    if (req.user) {
-        next();
-    } else {
-        res.redirect('/');
-    }
-}
-app.use(passport.initialize());
+app.use(passport.initialize()); //Initialize and start passport
 app.use(passport.session());
 
-app.set('view engine', 'ejs');
-app.get('/', (req, res) => {
-    res.render('index.ejs');
-});
+app.set('view engine', 'ejs'); //Allows us to render .ejs files
+
+app.get('/', (req, res) => res.render('index.ejs'));
+app.use('/user', userRouter); //When accessing a /user path, uses the routes from ./routes/user.js
+
 app.get('/failed', (req, res) => res.send('You failed to log in!'));
-app.get('/home', isLoggedIn, (req, res) => {
-    res.render('home.ejs', {
-        name: req.user.displayName,
-        profileImg: req.user.profileURL
-    });
-});
-app.get('/auth', passport.authenticate('google', { scope: ['profile', 'email'] }));
-app.get('/auth/callback',
+app.get('/auth', passport.authenticate('google', { scope: ['profile', 'email'] })); //Brings up the google sign in page
+app.get('/auth/callback', //Once a user signs in with google
     passport.authenticate('google', { failureRedirect: '/failed' }),
-    (req, res) => res.redirect('/home'),
+    (req, res) => res.redirect('/user'), //If successful sign in, redirect to /user
 );
-app.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
-});
+
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
