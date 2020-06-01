@@ -11,8 +11,6 @@ const UserSchema = new mongoose.Schema({
     displayName: String,
     profileURL: String,
     email: String,
-    
-    clicks: Number
 });
 const User = mongoose.model('User', UserSchema);
 
