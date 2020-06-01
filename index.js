@@ -12,10 +12,11 @@ const userRouter = require('./routes/user.js');
 app.use(bodyParser.urlencoded({ extended: false })); //Enables body-parser
 app.use(bodyParser.json());
 app.use(cookieSession({
-    secret: 'This is the session secret', //TODO Possibly make this an env var
+    secret: process.env.COOKIE_SESSION_SECRET, 
     resave: false,
     saveUninitialized: true
 }));
+
 app.use(passport.initialize()); //Initialize and start passport
 app.use(passport.session());
 
