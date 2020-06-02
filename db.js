@@ -4,7 +4,7 @@ async function findUser(googleId) {
     const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
     try {
         await client.connect();
-        const userCollection = client.db('test').collection('users');
+        const userCollection = client.db(process.env.MONGODB_NAME).collection('users');
         const user = await userCollection.findOne({ googleId });
         client.close();
         return user;
