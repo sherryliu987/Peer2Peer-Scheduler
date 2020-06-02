@@ -1,6 +1,5 @@
 const express = require('express');
 const passport = require('passport'); //Used for authentication
-const bodyParser = require('body-parser'); //Allows incoming request bodies to be easily available in req.body
 const cookieSession = require('cookie-session'); //Allows for the storage of cookies, keeping users signed in
 const app = express(); //Web framework
 const PORT = process.env.PORT || 3000; //The port for the server to run on. If deployed, it will use that port.
@@ -9,8 +8,8 @@ require('./passport-setup'); //Configures passport to authenticate with google a
 
 const userRouter = require('./routes/user.js');
 
-app.use(bodyParser.urlencoded({ extended: false })); //Enables body-parser
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
+app.use(express.json());
 app.use(cookieSession({
     secret: process.env.COOKIE_SESSION_SECRET, 
     resave: false,

@@ -17,13 +17,11 @@
   },
   "homepage": "https://github.com/sherryliu987/Peer2Peer-Scheduler#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "cookie-session": "^1.4.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.3",
     "express": "^4.17.1",
     "mongodb": "^3.5.8",
-    "mongoose": "^5.9.16",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0"
   }
