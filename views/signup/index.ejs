@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Peer2Peer Signup</title>
+        <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
+    </head>
+    <body>
+
+        <h1>Sign up</h1>
+        <% if (!isStudent) { %>
+            <button onclick="window.location.href='/signup/student'">Sign up as student</button>
+        <% } %>
+        <% if (!isMentor) { %>
+            <button onclick="window.location.href='/signup/mentor'">Apply for mentor</button>
+        <% } %>
+
+    </body>
+</html>

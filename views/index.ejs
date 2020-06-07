@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Peer2Peer Home</title>
-    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
-  </head>
-  <body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Peer2Peer Home</title>
+        <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
+    </head>
+    <body>
 
-    <h1>Peer2Peer</h1>
-    <button onclick="window.location.href='/auth'">Log in with Google</button>
+        <h1>Peer2Peer</h1>
+        <% if (!signedIn) { %>
+        <button onclick="window.location.href='/auth'">Log in with Google</button>
+        <% } else { %>
+            <% if (!isStudent) { %> 
+                <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
+            <% } else {  %>
+                <button onclick="window.location.href='/student'">Go to Student Home</button>
+            <% } %>
 
-  </body>
+            <% if (!isMentor) { %> 
+                <button onclick="window.location.href='/signup/mentor'">Sign up as Mentor</button>
+            <% } else { %>
+                <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
+            <% } %>
+
+            <br>
+            <br>
+            <button onclick="window.location.href='/logout'">Logout</button>
+        <% } %>
+
+
+    </body>
 </html>

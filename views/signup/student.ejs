@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Peer2Peer Signup as Student</title>
+        <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
+    </head>
+    <body>
+
+        <h1>Sign up</h1>
+        <p>This is a form to sign up as a student</p>
+        <% for (const e of errors) { %>
+            <p>There was an error in the <%= e %> field!</p>
+        <% } %>
+        <form action='/signup/student' method='post'>
+            <label for='firstName'>First Name: </label>
+            <input name='firstName' type='text' value='<%= values.firstName %>' required>
+            <br>
+            <label for='lastName'>Last Name: </label>
+            <input name='lastName' type='text' value='<%= values.lastName %>' required>
+            <br>
+            <label for='email'>Email: </label>
+            <input name='email' type='email' value='<%= values.email %>' required>
+            <br>
+            <label for='grade'>Grade</label>
+            <select name='grade' value='1'>
+                <% for (let i = 1; i <= 12; i++) { %>
+                <option value='<%= i %>'><%= i %></option>
+                <% } %>
+            </select>
+            <br>
+            <label for='state'>State: </label>
+            <input name='state' maxlength='2' type='text' value='<%= values.state || ""%>'required>
+            <br>
+            <br>
+
+            <input type='submit' value='Submit'>
+        </form>
+        <!--
+            Email
+            First Name
+            Last Name
+            Grade
+            State
+            School
+            Phone Num
+            Sessions
+            Parent email?
+        -->
+    </body>
+</html>

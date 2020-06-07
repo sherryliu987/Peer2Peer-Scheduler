@@ -12,9 +12,12 @@ passport.use(new GoogleStrategy({
         if (!userData) { //If that user does not exist in the db, create a new entry
             userData = {
                 googleId: profile.id,
-                displayName: profile.displayName,
+                firstName: profile.name.givenName,
+                lastName: profile.name.familyName,
                 email: profile.emails ? profile.emails[0].value : '', //In case of no email
                 profileURL: profile.photos ? profile.photos[0].value : '', //In case of no photo
+                isStudent: false,
+                isMentor: false
                 //TODO Add a default photo (and maybe an email)
             };
             await db.addUser(userData);
