@@ -13,7 +13,8 @@ router.get('/', (req, res) => { //When a user accesses /user, display a custom p
         lastName: req.user.lastName,
         profileImg: req.user.profileURL,
         grade: req.user.grade,
-        state: req.user.state
+        state: req.user.state,
+        school: req.user.school
     });
 });
 

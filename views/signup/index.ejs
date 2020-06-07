@@ -8,11 +8,16 @@
     <body>
 
         <h1>Sign up</h1>
-        <% if (!isStudent) { %>
-            <button onclick="window.location.href='/signup/student'">Sign up as student</button>
+        <% if (!isStudent) { %> 
+            <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
+        <% } else {  %>
+            <button onclick="window.location.href='/student'">Go to Student Home</button>
         <% } %>
-        <% if (!isMentor) { %>
-            <button onclick="window.location.href='/signup/mentor'">Apply for mentor</button>
+
+        <% if (!isMentor) { %> 
+            <button onclick="window.location.href='/signup/mentor'">Sign up as Mentor</button>
+        <% } else { %>
+            <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
         <% } %>
 
     </body>

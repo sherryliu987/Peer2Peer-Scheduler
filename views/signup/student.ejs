@@ -8,7 +8,7 @@
     <body>
 
         <h1>Sign up</h1>
-        <p>This is a form to sign up as a student</p>
+        <p>This is a form to sign up as a student. Some fields have been autofilled based on your Google Account.</p>
         <% for (const e of errors) { %>
             <p>There was an error in the <%= e %> field!</p>
         <% } %>
@@ -32,20 +32,15 @@
             <label for='state'>State: </label>
             <input name='state' maxlength='2' type='text' value='<%= values.state || ""%>'required>
             <br>
+            <label for='school'>School: </label>
+            <input name='school' type='text' value='<%= values.school || "" %>' required>
             <br>
+            <label for='phone'>Phone Number: </label>
+            <input name='phone' type='text' value='<%= values.phone || "" %>' required>
 
+            <br>
+            <br>
             <input type='submit' value='Submit'>
         </form>
-        <!--
-            Email
-            First Name
-            Last Name
-            Grade
-            State
-            School
-            Phone Num
-            Sessions
-            Parent email?
-        -->
     </body>
 </html>

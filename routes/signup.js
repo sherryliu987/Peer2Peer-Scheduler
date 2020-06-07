@@ -13,6 +13,7 @@ router.get('/', (req, res) => { //When someone accesses /signup
         });
     }
 });
+
 router.get('/student', (req, res) => { //When someone accesses /signup/student
     if (!req.user || req.user.isStudent) {//If they aren't signed in or are already a student
         res.redirect('/'); 
@@ -27,10 +28,13 @@ router.get('/student', (req, res) => { //When someone accesses /signup/student
         });
     }
 });
+
 router.post('/student', [
     check('firstName').trim().notEmpty(),
     check('lastName').trim().notEmpty(),
     check('email').isEmail().normalizeEmail(),
+    check('school').trim().notEmpty(),
+    check('phone').isMobilePhone(),
     check('state').isLength(2)
 ], async (req, res) => {
     if (!req.user || req.user.isStudent) {
@@ -51,6 +55,8 @@ router.post('/student', [
             email: req.body.email,
             grade: req.body.grade,
             state: req.body.state,
+            school: req.body.school,
+            phone: req.body.phone
         });
         res.redirect('/student');
     }
