@@ -4,39 +4,72 @@
         <meta charset="UTF-8">
         <title>Peer2Peer Signup as Student</title>
         <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
+<style>
+.err {
+    display: inline;
+    color: red;
+}
+</style>
     </head>
     <body>
 
         <h1>Sign up</h1>
         <p>This is a form to sign up as a student. Some fields have been autofilled based on your Google Account.</p>
-        <% for (const e of errors) { %>
-            <p>There was an error in the <%= e %> field!</p>
-        <% } %>
+
         <form action='/signup/student' method='post'>
+
             <label for='firstName'>First Name: </label>
             <input name='firstName' type='text' value='<%= values.firstName %>' required>
+            <% if (errors.includes('firstName')) { %>
+                <p class='err'>Please specify a first name.</p>
+            <% } %>
             <br>
+
             <label for='lastName'>Last Name: </label>
             <input name='lastName' type='text' value='<%= values.lastName %>' required>
+            <% if (errors.includes('lastName')) { %>
+                <p class='err'>Please specify a last name.</p>
+            <% } %>
             <br>
+
             <label for='email'>Email: </label>
-            <input name='email' type='email' value='<%= values.email %>' required>
+            <input name='email' type='email' value='<%= values.email %>' placeholder='example@email.com' required>
+            <% if (errors.includes('email')) { %>
+                <p class='err'>Please specify a valid email.</p>
+            <% } %>
             <br>
+
             <label for='grade'>Grade</label>
             <select name='grade' value='1'>
-                <% for (let i = 1; i <= 12; i++) { %>
+            <option value='K'>K</option>
+            <% for (let i = 1; i <= 12; i++) { %>
                 <option value='<%= i %>'><%= i %></option>
-                <% } %>
+            <% } %>
             </select>
+            <% if (errors.includes('grade')) { %>
+                <p class='err'>Please specify a valid grade.</p>
+            <% } %>
             <br>
+
             <label for='state'>State: </label>
-            <input name='state' maxlength='2' type='text' value='<%= values.state || ""%>'required>
+            <input name='state' maxlength='2' size='2' type='text' placeholder='AZ' value='<%= values.state || ""%>'required>
+            <% if (errors.includes('state')) { %>
+                <p class='err'>Please specify the 2 letter abbreviation of your state.</p>
+            <% } %>
             <br>
+
             <label for='school'>School: </label>
             <input name='school' type='text' value='<%= values.school || "" %>' required>
+            <% if (errors.includes('school')) { %>
+                <p class='err'>Please specify the name of your school.</p>
+            <% } %>
             <br>
+
             <label for='phone'>Phone Number: </label>
-            <input name='phone' type='text' value='<%= values.phone || "" %>' required>
+            <input name='phone' type='tel' pattern='[0-9]{3}[0-9]{3}[0-9]{4}' placeholder='1234567890' value='<%= values.phone || "" %>' required>
+            <% if (errors.includes('phone')) { %>
+                <p class='err'>Please specify a phone number in the format 1234567890</p>
+            <% } %>
 
             <br>
             <br>
