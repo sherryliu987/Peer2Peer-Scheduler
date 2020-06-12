@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>Peer2Peer Home</title>
-        <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
     </head>
     <body>
 
@@ -17,17 +16,18 @@
                 <button onclick="window.location.href='/student'">Go to Student Home</button>
             <% } %>
 
-            <% if (!isMentor) { %> 
-                <button onclick="window.location.href='/signup/mentor'">Sign up as Mentor</button>
-            <% } else { %>
+            <% if (!isMentor && !appliedMentor) { %> 
+                <button onclick="window.location.href='/signup/mentor'">Apply for Mentor</button>
+            <% } else if (isMentor) { %>
                 <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
+            <% } else { %>
+                <p>Your mentor application is being processed.</p>
             <% } %>
 
             <br>
             <br>
             <button onclick="window.location.href='/logout'">Logout</button>
         <% } %>
-
 
     </body>
 </html>

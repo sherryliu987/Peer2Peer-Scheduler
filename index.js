@@ -7,6 +7,7 @@ require('dotenv').config(); //Creates environment variables
 require('./passport-setup'); //Configures passport to authenticate with google and use mongodb
 
 const studentRouter = require('./routes/student.js');
+const mentorRouter = require('./routes/mentor.js');
 const signupRouter = require('./routes/signup.js');
 
 app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
@@ -28,11 +29,13 @@ app.get('/', (req, res) => {
     if (req.user) {
         data.isStudent = req.user.isStudent;
         data.isMentor = req.user.isMentor;
+        data.appliedMentor = req.user.appliedMentor;
     }
     res.render('index.ejs', data);
 });
 app.use('/student', studentRouter); //When accessing a /student path, uses the routes from ./routes/student.js
-app.use('/signup', signupRouter); //When accessing a /signupe path, use the routes from ./routes/signup.js
+app.use('/mentor', mentorRouter); //When accessing a /mentor path, uses the routes from ./routes/mentor.js
+app.use('/signup', signupRouter); //When accessing a /signup path, use the routes from ./routes/signup.js
 
 app.get('/failed', (req, res) => res.send('You failed to log in!'));
 app.get('/auth', passport.authenticate('google', { scope: ['profile', 'email'] })); //Brings up the google sign in page

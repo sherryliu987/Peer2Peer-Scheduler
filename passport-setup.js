@@ -17,7 +17,8 @@ passport.use(new GoogleStrategy({
                 email: profile.emails ? profile.emails[0].value : '', //In case of no email
                 profileURL: profile.photos ? profile.photos[0].value : '', //In case of no photo
                 isStudent: false,
-                isMentor: false
+                isMentor: false, //If they are a mentor
+                appliedMentor: false, //If they have applied to become a mentor
                 //TODO Add a default photo (and maybe an email)
             };
             await db.addUser(userData);
