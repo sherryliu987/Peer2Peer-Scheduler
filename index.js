@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
         signedIn: (req.user != null)
     }
     if (req.user) {
+        data.firstName = req.user.firstName;
         data.isStudent = req.user.isStudent;
         data.isMentor = req.user.isMentor;
         data.appliedMentor = req.user.appliedMentor;

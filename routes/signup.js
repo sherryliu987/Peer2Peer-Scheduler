@@ -3,12 +3,13 @@ const { check, validationResult } = require('express-validator');
 const db = require('../db.js');
 const router = express.Router();
 
-//TODO Think about getting rid of the /signup, and instead just picking student or mentor from /
 router.get('/', (req, res) => { //When someone accesses /signup
     if (!req.user) { //If they aren't signed in with google yet
         res.redirect('/');
     } else {
         res.render('signup/index.ejs', {
+            signedIn: true,
+            firstName: req.user.firstName,
             isStudent: req.user.isStudent,
             isMentor: req.user.isMentor,
             appliedMentor: req.user.appliedMentor
@@ -21,6 +22,11 @@ router.get('/student', (req, res) => { //When someone accesses /signup/student
         res.redirect('/'); 
     } else {
         res.render('signup/student.ejs', {
+            signedIn: true,
+            firstName: req.user.firstName,
+            isStudent: req.user.isStudent,
+            isMentor: req.user.isMentor,
+            appliedMentor: req.user.appliedMentor,
             values: {
                 firstName: req.user.firstName,
                 lastName: req.user.lastName,
@@ -69,6 +75,11 @@ router.get('/mentor', (req, res) => { //When someone accesses /signup/mentor
         res.redirect('/'); 
     } else {
         res.render('signup/mentor.ejs', {
+            signedIn: true,
+            isStudent: req.user.isStudent,
+            isMentor: req.user.isMentor,
+            appliedMentor: req.user.appliedMentor,
+            firstName: req.user.firstName,
             values: {
                 firstName: req.user.firstName,
                 lastName: req.user.lastName,
@@ -140,7 +151,16 @@ router.get('/applied', (req, res) => {
     if (!req.user || !req.user.appliedMentor || req.user.isMentor) {
         req.redirect('/');
     } else {
-        res.render('signup/applied.ejs');
+        let data = {
+            signedIn: (req.user != null)
+        }
+        if (req.user) {
+            data.isStudent = req.user.isStudent;
+            data.isMentor = req.user.isMentor;
+            data.appliedMentor = req.user.appliedMentor;
+            data.firstName = req.user.firstName;
+        }
+        res.render('signup/applied.ejs', data);
     }
 });
 

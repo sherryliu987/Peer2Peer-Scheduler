@@ -1,0 +1,29 @@
+<header>
+    <div id="leftHeader">
+        <h2>Peer2Peer</h2>
+        <% if (signedIn) { %>
+            <p>Welcome, <%=firstName%></p>
+        <% } %>
+    </div>
+    <div id='rightHeader'>
+        <a href='/'>Home</a>
+        <% if (!signedIn) { %>
+            <a href='/auth'>Sign up with Google</a>
+        <% } else { %>
+            <% if (isStudent) { %>
+                <a href='/student'>Student Home</a>
+            <% } else { %>
+                <a href='/signup/student'>Signup as Student</a>
+            <% } %>
+
+            <% if (isMentor) { %>
+                <a href='/mentor'>Mentor Home</a>
+            <% } else if (appliedMentor) { %>
+                <a>You're Mentor application is being processed.</a>
+            <% } else { %>
+                <a href='/signup/mentor'>Signup as Mentor</a>
+            <% } %>
+            <a href='/logout'>Logout</a>
+        <% } %>
+    </div>
+</header>

@@ -3,31 +3,40 @@
     <head>
         <meta charset="UTF-8">
         <title>Peer2Peer Home</title>
+<style>
+<%- include('header.css') -%>
+#content {
+    margin-left: 10px;
+    text-align: center;
+}
+</style>
     </head>
     <body>
+        <%- include('header'); -%>
 
-        <h1>Peer2Peer</h1>
-        <% if (!signedIn) { %>
-        <button onclick="window.location.href='/auth'">Log in with Google</button>
-        <% } else { %>
-            <% if (!isStudent) { %> 
-                <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
-            <% } else {  %>
-                <button onclick="window.location.href='/student'">Go to Student Home</button>
-            <% } %>
+        <div id="content">
+            <h1>Welcome to Peer2Peer</h1>
 
-            <% if (!isMentor && !appliedMentor) { %> 
-                <button onclick="window.location.href='/signup/mentor'">Apply for Mentor</button>
-            <% } else if (isMentor) { %>
-                <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
+            <% if (!signedIn) { %>
+                <button onclick="window.location.href='/auth'">Sign up with Google</button>
             <% } else { %>
-                <p>Your mentor application is being processed.</p>
+                <% if (!isStudent) { %> 
+                    <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
+                <% } else {  %>
+                    <button onclick="window.location.href='/student'">Go to Student Home</button>
+                <% } %>
+
+                <% if (!isMentor && !appliedMentor) { %> 
+                    <button onclick="window.location.href='/signup/mentor'">Apply for Mentor</button>
+                <% } else if (isMentor) { %>
+                    <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
+                <% } else { %>
+                    <p>Your mentor application is being processed.</p>
+                <% } %>
+                <br>
+                <br>
+                <button onclick="window.location.href='/logout'">Logout</button>
             <% } %>
-
-            <br>
-            <br>
-            <button onclick="window.location.href='/logout'">Logout</button>
-        <% } %>
-
+        </div>
     </body>
 </html>
