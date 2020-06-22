@@ -1,6 +1,6 @@
 <header>
     <div id="leftHeader">
-        <h2>Peer2Peer</h2>
+        <h2><a href='/'>Peer2Peer</a></h2>
         <% if (signedIn) { %>
             <p>Welcome, <%=firstName%></p>
         <% } %>
@@ -19,9 +19,9 @@
             <% if (isMentor) { %>
                 <a href='/mentor'>Mentor Home</a>
             <% } else if (appliedMentor) { %>
-                <a>You're Mentor application is being processed.</a>
+                <a>Your Mentor application is being processed.</a>
             <% } else { %>
-                <a href='/signup/mentor'>Signup as Mentor</a>
+                <a href='/signup/mentor'>Apply for Mentor</a>
             <% } %>
             <a href='/logout'>Logout</a>
         <% } %>

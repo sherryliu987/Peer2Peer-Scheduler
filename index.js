@@ -23,16 +23,10 @@ app.use(passport.session());
 
 app.set('view engine', 'ejs'); //Allows us to render .ejs files
 app.get('/', (req, res) => {
-    let data = {
-        signedIn: (req.user != null)
-    }
-    if (req.user) {
-        data.firstName = req.user.firstName;
-        data.isStudent = req.user.isStudent;
-        data.isMentor = req.user.isMentor;
-        data.appliedMentor = req.user.appliedMentor;
-    }
-    res.render('index.ejs', data);
+    res.render('index.ejs', {
+        signedIn: (req.user != null),
+        ...req.user
+    });
 });
 app.use('/student', studentRouter); //When accessing a /student path, uses the routes from ./routes/student.js
 app.use('/mentor', mentorRouter); //When accessing a /mentor path, uses the routes from ./routes/mentor.js

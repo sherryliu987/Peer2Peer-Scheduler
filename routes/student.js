@@ -9,16 +9,8 @@ router.use((req, res, next) => {
 
 router.get('/', (req, res) => { //When a user accesses /user, display a custom page with ejs
     res.render('student/index.ejs', {
-        signedIn: true,
-        isStudent: true,
-        isMentor: req.user.isMentor,
-        appliedMentor: req.user.appliedMentor,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        profileImg: req.user.profileURL,
-        grade: req.user.grade,
-        state: req.user.state,
-        school: req.user.school
+        signedIn: (req.user != null),
+        ...req.user,
     });
 });
 

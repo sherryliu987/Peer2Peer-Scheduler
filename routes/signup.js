@@ -8,11 +8,8 @@ router.get('/', (req, res) => { //When someone accesses /signup
         res.redirect('/');
     } else {
         res.render('signup/index.ejs', {
-            signedIn: true,
-            firstName: req.user.firstName,
-            isStudent: req.user.isStudent,
-            isMentor: req.user.isMentor,
-            appliedMentor: req.user.appliedMentor
+            signedIn: (req.user != null),
+            ...req.user
         });
     }
 });
@@ -22,11 +19,8 @@ router.get('/student', (req, res) => { //When someone accesses /signup/student
         res.redirect('/'); 
     } else {
         res.render('signup/student.ejs', {
-            signedIn: true,
-            firstName: req.user.firstName,
-            isStudent: req.user.isStudent,
-            isMentor: req.user.isMentor,
-            appliedMentor: req.user.appliedMentor,
+            signedIn: (req.user != null),
+            ...req.user,
             values: {
                 firstName: req.user.firstName,
                 lastName: req.user.lastName,
@@ -51,6 +45,8 @@ router.post('/student', [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             res.render('signup/student.ejs', {
+                signedIn: (req.user != null),
+                ...req.user,
                 values: req.body,
                 errors: errors.array().map(e => e.param)
             });
@@ -75,11 +71,8 @@ router.get('/mentor', (req, res) => { //When someone accesses /signup/mentor
         res.redirect('/'); 
     } else {
         res.render('signup/mentor.ejs', {
-            signedIn: true,
-            isStudent: req.user.isStudent,
-            isMentor: req.user.isMentor,
-            appliedMentor: req.user.appliedMentor,
-            firstName: req.user.firstName,
+            signedIn: (req.user != null),
+            ...req.user,
             values: {
                 firstName: req.user.firstName,
                 lastName: req.user.lastName,
@@ -126,6 +119,8 @@ router.post('/mentor', [
             if (chosenTimes.length == 0) errorsArr.push('times');
 
             res.render('signup/mentor.ejs', {
+                signedIn: (req.user != null),
+                ...req.user,
                 values: req.body,
                 errors: errorsArr
             });
@@ -160,7 +155,10 @@ router.get('/applied', (req, res) => {
             data.appliedMentor = req.user.appliedMentor;
             data.firstName = req.user.firstName;
         }
-        res.render('signup/applied.ejs', data);
+        res.render('signup/applied.ejs', {
+                signedIn: (req.user != null),
+                ...req.user,
+        });
     }
 });
 
