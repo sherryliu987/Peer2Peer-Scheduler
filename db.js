@@ -36,4 +36,45 @@ async function updateUser(googleId, data) {
     }
 }
 
-module.exports = { addUser, findUser, updateUser };
+async function addSession(sessionData) {
+    const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const sessionCollection = client.db(process.env.MONGODB_NAME).collection('sessions');
+        await sessionCollection.insertOne(sessionData);
+        client.close();
+    } catch (err) {
+        console.error('Error adding session.', err);
+    }
+}
+
+async function getMentors(dateTime, subject) {
+    const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const userCollection = client.db(process.env.MONGODB_NAME).collection('users');
+
+        const date = new Date(dateTime);
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let time = 'Afternoon'; //Afternoon is from 12pm-4pm
+        if (date.getHours() < 12) time = 'Morning'; //Morning is until 11:59am
+        else if (date.getHours() >= 12 + 4) time = 'Evening'; //Evening is after 3:59pm
+        const dateTimeStr = days[date.getDay()] + ' ' + time;
+
+        let mentors = [];
+        const cursor = await userCollection.find({ isMentor: true, subjects: subject, availability: dateTimeStr });
+        await cursor.forEach((doc, err) => {
+            if (err) {
+                console.error('Error when iterating over mentors.', err);
+            } else {
+                mentors.push(doc.googleId);
+            }
+        });
+        client.close();
+        return mentors.slice(0, 3); //TODO Add a system to pick mentors based on how much they've worked and rating
+    } catch (err) {
+        console.error('Error getting mentors.', err);
+    }
+}
+
+module.exports = { addUser, findUser, updateUser, addSession, getMentors };

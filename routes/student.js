@@ -1,4 +1,6 @@
 const express = require('express');
+const { check, validationResult } = require('express-validator');
+const db = require('../db.js');
 const router = express.Router();
 
 //Middleware to make sure any user trying to access the user pages is logged in
@@ -12,6 +14,47 @@ router.get('/', (req, res) => { //When a user accesses /user, display a custom p
         signedIn: (req.user != null),
         ...req.user,
     });
+});
+
+router.get('/requests', (req, res) => {
+    res.render('student/request.ejs', {
+        signedIn: (req.user != null),
+        ...req.user,
+        values: {},
+        errors: []
+    });
+});
+router.post('/requests', [
+    check('subject').trim().notEmpty().escape()
+//    check('datetime').escape()
+], async (req, res) => {
+    if (!req.user || !req.user.isStudent) {
+        res.status(401);
+    } else {
+        const errors = validationResult(req);
+        const regex = /\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [AP]M/;
+        const date = new Date(req.body.datetime);
+        const goodDate = (regex.test(req.body.datetime) && date != 'Invalid Date');
+
+        if (!errors.isEmpty() || !goodDate) {
+            let allErrors = errors.array().map(e => e.param);
+            if (!goodDate) allErrors.push('datetime');
+            res.render('student/request.ejs', {
+                signedIn: (req.user != null),
+                ...req.user,
+                values: req.body,
+                errors: allErrors
+            });
+            return;
+        }
+
+        //TODO Error checking to make sure req.body.subject is a real subject
+        const mentors = await db.getMentors(date.getTime(), req.body.subject);
+        console.log('Found mentors', mentors);
+
+        //TODO Update DB with information
+        res.redirect('/student');
+    }
 });
 
 module.exports = router; //Allows the router object to be accessed through require()

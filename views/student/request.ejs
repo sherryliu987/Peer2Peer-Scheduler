@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Peer2Peer Request a Session</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<style>
+<%- include('../header.css'); -%>
+.err {
+    display: inline;
+    color: red;
+}
+</style>
+    </head>
+    <body>
+        <%- include('../header'); -%>
+
+        <h1>Request Session</h1>
+
+        <form action='/student/requests' method='post'>
+            <label for='datetime'>Please choose a date and time for the session in the format MM/DD/YYYY HH:MM AM/PM</label>
+            <div style='display: inline'>
+                <div class='input-group date' id='datetimeWrapper' style='width:220px'>
+                    <input name='datetime' type='text' pattern='\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [AP]M' required class='form-control'/>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <% if (errors.includes('datetime')) { %>
+                <p class="err">Please specify a date and time in the format MM/DD/YYYY HH:MM AM/PM</p>
+            <% } %>
+            <!-- TODO Restrict dates/times --!>
+            
+
+            <br>
+            <% const subjects = ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
+                    'K-5 Math', '6-8 Math', 'Math 1', 'Math 2', 'Math 3', 'Pre-Calculus', 'Calculus', 'Statistics',
+                    'K-5 Social Studies', '6-8 Social Studies', 'World History', 'American History', 'K-5 English', '6-8 English', '9-12 English',
+                    'Computer Science', 'Economics', 'Chinese', 'Spanish', 'French', 'German', 'Latin', 'Music', 'Music theory']; %>
+            <label for='subject'>Subject: </label>
+            <select name='subject' value='<%= values.subject %>' required>
+                <% for (const subject of subjects) { %>
+                <option value='<%=subject%>'><%=subject%></option>
+                <% } %>
+            </select>
+            <% if (errors.includes('subject')) { %>
+                <p class='err'>Please choose a subject</p>
+            <% } %>
+            <br>
+
+            <br>
+            <br>
+            <input type='submit' value='Submit'>
+        </form>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimeWrapper').datetimepicker();
+            });
+        </script>
+    </body>
+</html>
