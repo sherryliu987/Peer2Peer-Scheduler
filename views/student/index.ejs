@@ -5,7 +5,10 @@
     <title>Peer2Peer Student Home</title>
 <style>
 <%- include('../header.css'); -%>
-
+.session {
+    background-color: #E0E0E0;
+    padding: 5px;
+}
 </style>
   </head>
   <body>
@@ -18,6 +21,28 @@
     <button onclick="window.location.href='/student/requests'">Request a session</button>
     <button onclick="window.location.href='/'">Main</button>
     <button onclick="window.location.href='/logout'">Log out</button>
+
+    <% function showSession(session) { %>
+        <div class="session">
+            <p>Mentor: <%=session.mentor%></p>
+            <p>PeerLeader: <%=session.peerLeader%></p>
+            <p>Subject: <%=session.subject%></p>
+            <p>Date/Time: <%=new Date(session.dateTime);%></p> <!--TODO Make this always EST -->
+        </div>
+    <% } %>
+
+    <% if (sessions.upcoming.length > 0) { %>
+        <h2>Upcoming Sessions</h2> 
+        <% for (const session of sessions.upcoming) showSession(session) %> 
+    <% } %>
+    <% if (sessions.past.length > 0) { %>
+        <h2>Past Sessions</h2> 
+        <% for (const session of sessions.past) showSession(session) %> 
+    <% } %>
+    <% if (sessions.cancelled.length > 0) { %>
+        <h2>Cancelled Sessions</h2> 
+        <% for (const session of sessions.cancelled) showSession(session) %> 
+    <% } %>
 
   </body>
 </html>

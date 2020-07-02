@@ -19,7 +19,7 @@ passport.use(new GoogleStrategy({
                 isStudent: false,
                 isMentor: false, //If they are a mentor
                 appliedMentor: false, //If they have applied to become a mentor
-                //TODO Add a default photo (and maybe an email)
+                isPeerLeader: false,
             };
             await db.addUser(userData);
         }
