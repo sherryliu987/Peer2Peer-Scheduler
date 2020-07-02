@@ -144,7 +144,7 @@ router.post('/mentor', [
 
 router.get('/applied', (req, res) => {
     if (!req.user || !req.user.appliedMentor || req.user.isMentor) {
-        req.redirect('/');
+        res.redirect('/');
     } else {
         let data = {
             signedIn: (req.user != null)
