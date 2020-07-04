@@ -75,6 +75,10 @@ async function getUserSessions(studentId) {
             }
         });
         client.close();
+        //Sort sessions with newest first
+        sessions.upcoming.sort((a, b) => b.dateTime - a.dateTime);
+        sessions.past.sort((a, b) => b.dateTime - a.dateTime);
+        sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
         return sessions;
     } catch (err) {
         console.error('Error adding session.', err);
