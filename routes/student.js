@@ -11,7 +11,6 @@ router.use((req, res, next) => {
 
 router.get('/', async (req, res) => { //When a user accesses /user, display a custom page with ejs
     const sessions = await db.getUserSessions(req.user.googleId);
-    console.log('Got sessions: ', sessions);
     res.render('student/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,
@@ -70,6 +69,20 @@ router.post('/requests', [
         });
         //Update DB with information
         res.redirect('/student');
+    }
+});
+
+router.post('/cancel/:id', async (req, res) => {
+    if (!req.user || !req.user.isStudent) {
+        res.status(401);
+    } else {
+        console.log('Session cancel request for sess ' + req.params.id);
+        const errorCode = await db.cancelSession(req.params.id, req.user.googleId);
+        if (errorCode == -1) {
+            res.redirect('/student');
+        } else {
+            res.status(errorCode);
+        }
     }
 });
 

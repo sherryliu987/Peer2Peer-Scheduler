@@ -1,4 +1,6 @@
-const MongoClient = require('mongodb').MongoClient;
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+const ObjectId = mongodb.ObjectId;
 
 async function findUser(googleId) {
     const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -48,6 +50,34 @@ async function addSession(sessionData) {
     }
 }
 
+async function cancelSession(sessionId, studentId) {
+    const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const sessionCollection = client.db(process.env.MONGODB_NAME).collection('sessions');
+        let objectId;
+        try {
+            objectId = new ObjectId(sessionId);
+        } catch (err) {
+            return 404; //An invalid ObjectId was passed in
+        }
+        const session = await sessionCollection.findOne({ _id: objectId });
+        if (session == null) {
+            client.close();
+            return 404;
+        }
+        if (session.studentId == studentId) { //Make sure the student created that request
+            await sessionCollection.updateOne({ _id: objectId, studentId }, { $set: { cancelled: true }});
+            client.close();
+            return -1; //-1 means no error
+        }
+        client.close();
+        return 401;
+    } catch (err) {
+        console.error('Error cancelling session.', err);
+    }
+}
+
 async function getUserSessions(studentId) {
     const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
     try {
@@ -64,6 +94,7 @@ async function getUserSessions(studentId) {
                 console.error('Error when getting user sessions.', err);
             } else {
                 const data = {
+                    id: doc._id,
                     mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
                     peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
                     dateTime: doc.dateTime,
@@ -139,4 +170,4 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
-module.exports = { addUser, findUser, updateUser, addSession, getUserSessions, getMentors, getPeerLeaders };
+module.exports = { addUser, findUser, updateUser, addSession, cancelSession, getUserSessions, getMentors, getPeerLeaders };

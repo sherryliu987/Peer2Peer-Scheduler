@@ -22,18 +22,23 @@
     <button onclick="window.location.href='/'">Main</button>
     <button onclick="window.location.href='/logout'">Log out</button>
 
-    <% function showSession(session) { %>
+    <% function showSession(session, showCancel) { %>
         <div class="session">
             <p>Mentor: <%=session.mentor%></p>
             <p>PeerLeader: <%=session.peerLeader%></p>
             <p>Subject: <%=session.subject%></p>
             <p>Date/Time: <%=new Date(session.dateTime);%></p> <!--TODO Make this always EST -->
+            <% if (showCancel) { %>
+                <form action='/student/cancel/<%=session.id%>' method='POST'>
+                    <input type='submit' value='Cancel Session'>
+                </form>
+            <% } %>
         </div>
     <% } %>
 
     <% if (sessions.upcoming.length > 0) { %>
         <h2>Upcoming Sessions</h2> 
-        <% for (const session of sessions.upcoming) showSession(session) %> 
+        <% for (const session of sessions.upcoming) showSession(session, true) %> 
     <% } %>
     <% if (sessions.past.length > 0) { %>
         <h2>Past Sessions</h2> 
