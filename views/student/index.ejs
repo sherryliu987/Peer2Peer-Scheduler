@@ -27,7 +27,7 @@
             <p>Mentor: <%=session.mentor%></p>
             <p>PeerLeader: <%=session.peerLeader%></p>
             <p>Subject: <%=session.subject%></p>
-            <p>Date/Time: <%=new Date(session.dateTime);%></p> <!--TODO Make this always EST -->
+            <p class='datetime'><%=session.dateTime%></p>
             <% if (showCancel) { %>
                 <form action='/student/cancel/<%=session.id%>' method='POST'>
                     <input type='submit' value='Cancel Session'>
@@ -48,6 +48,11 @@
         <h2>Cancelled Sessions</h2> 
         <% for (const session of sessions.cancelled) showSession(session) %> 
     <% } %>
-
+    <script>
+    const datetimes = document.getElementsByClassName('datetime');
+    for (const element of datetimes) {
+        element.innerText = 'Date/Time: ' + new Date(parseInt(element.innerText)).toLocaleString();
+    }
+    </script>
   </body>
 </html>

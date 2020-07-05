@@ -17,21 +17,22 @@
 
         <h1>Request Session</h1>
 
-        <form action='/student/requests' method='post'>
+        <form id='requestForm' action='/student/requests' method='post'>
             <label for='datetime'>Please choose a date and time for the session in the format MM/DD/YYYY HH:MM AM/PM</label>
+            <p id='timezone'>Please enter the date in the - timezone</p>
             <div style='display: inline'>
                 <div class='input-group date' id='datetimeWrapper' style='width:220px'>
-                    <input name='datetime' type='text' pattern='\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [AP]M' required class='form-control'/>
+                    <input name='datetime' id='datetime' type='text' pattern='\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [AP]M' required class='form-control'/>
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
                 </div>
             </div>
-            <% if (errors.includes('datetime')) { %>
+            <% if (errors.includes('datetime') || errors.includes('datetimeMS')) { %>
                 <p class="err">Please specify a date and time in the format MM/DD/YYYY HH:MM AM/PM</p>
             <% } %>
+            <input type='hidden' name='datetimeMS' id='datetimeMS' value=''>
             <!-- TODO Restrict dates/times --!>
-            
 
             <br>
             <% const subjects = ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
@@ -69,6 +70,11 @@
             $(function () {
                 $('#datetimeWrapper').datetimepicker();
             });
+            //I don't know how to use JQuery, so I'm just sticking with ugly, plain JS
+            document.getElementById('timezone').innerText = 'Please use the ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ' time zone.';
+            document.getElementById('requestForm').onsubmit = () => {
+                document.getElementById('datetimeMS').value = new Date(document.getElementById('datetime').value).getTime();
+            }
         </script>
     </body>
 </html>

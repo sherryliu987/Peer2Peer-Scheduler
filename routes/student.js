@@ -27,26 +27,23 @@ router.get('/requests', (req, res) => {
     });
 });
 router.post('/requests', [
-    check('subject').trim().notEmpty().escape()
-//    check('datetime').escape()
+    check('subject').trim().notEmpty().escape(),
+    check('datetimeMS').trim().notEmpty().isNumeric()
 ], async (req, res) => {
     if (!req.user || !req.user.isStudent) {
         res.status(401);
     } else {
-        const errors = validationResult(req);
-        const regex = /\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [AP]M/;
-        const date = new Date(req.body.datetime); //TODO Make sure this is in EST
-        const dateMS = date.getTime();
-        const goodDate = (regex.test(req.body.datetime) && date != 'Invalid Date');
+        console.log(req.body);
 
-        if (!errors.isEmpty() || !goodDate) {
-            let allErrors = errors.array().map(e => e.param);
-            if (!goodDate) allErrors.push('datetime');
+        const errors = validationResult(req);
+        const dateMS = parseInt(req.body.datetimeMS);
+
+        if (!errors.isEmpty()) {
             res.render('student/request.ejs', {
                 signedIn: (req.user != null),
                 ...req.user,
                 values: req.body,
-                errors: allErrors
+                errors: errors.array().map(e => e.param)
             });
             return;
         }
