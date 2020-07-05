@@ -28,11 +28,13 @@
                     </span>
                 </div>
             </div>
+            <% if (errors.includes('tooEarly')) { %>
+                <p class="err">Please choose a date/time in the future.</p>
+            <% } %>
             <% if (errors.includes('datetime') || errors.includes('datetimeMS')) { %>
                 <p class="err">Please specify a date and time in the format MM/DD/YYYY HH:MM AM/PM</p>
             <% } %>
             <input type='hidden' name='datetimeMS' id='datetimeMS' value=''>
-            <!-- TODO Restrict dates/times --!>
 
             <br>
             <% const subjects = ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
@@ -68,7 +70,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript">
             $(function () {
-                $('#datetimeWrapper').datetimepicker();
+                let date = new Date();
+                date.setHours(24);
+                date.setMinutes(0);
+                
+                $('#datetimeWrapper').datetimepicker({
+                    minDate: date //Restricts the datepicker to only allow dates after the current time
+                });
             });
             //I don't know how to use JQuery, so I'm just sticking with ugly, plain JS
             document.getElementById('timezone').innerText = 'Please use the ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ' time zone.';

@@ -37,17 +37,20 @@ router.post('/requests', [
 
         const errors = validationResult(req);
         const dateMS = parseInt(req.body.datetimeMS);
+        const currentTime = new Date().getTime();
 
-        if (!errors.isEmpty()) {
+        if (!errors.isEmpty() || dateMS <= currentTime) {
+            let allErrors = errors.array().map(e => e.param);
+            if (dateMS <= currentTime) allErrors.push('tooEarly');
             res.render('student/request.ejs', {
                 signedIn: (req.user != null),
                 ...req.user,
                 values: req.body,
-                errors: errors.array().map(e => e.param)
+                errors: allErrors
             });
             return;
         }
-
+        
         //TODO Error checking to make sure req.body.subject is a real subject
         const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
         const peerLeaders = await db.getPeerLeaders(dateMS);
