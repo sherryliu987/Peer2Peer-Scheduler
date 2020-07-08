@@ -26,14 +26,13 @@ router.get('/requests', (req, res) => {
         errors: []
     });
 });
-router.post('/requests', [
+router.post('/requests', [ //TODO Prevent student from spamming submit request button and creating duplicate requests
     check('subject').trim().notEmpty().escape(),
     check('datetimeMS').trim().notEmpty().isNumeric()
 ], async (req, res) => {
     if (!req.user || !req.user.isStudent) {
         res.status(401);
     } else {
-        console.log(req.body);
 
         const errors = validationResult(req);
         const dateMS = parseInt(req.body.datetimeMS);
@@ -57,7 +56,11 @@ router.post('/requests', [
         console.log('Found mentors', mentors);
         console.log('Found peer leaders', peerLeaders);
         await db.addSession({
-            studentId: req.user.googleId,
+            student: {
+                id: req.user.googleId,
+                name: req.user.firstName + ' ' + req.user.lastName,
+                grade: req.user.grade
+            },
             mentors,
             mentorConfirm: false,
             peerLeaders,
@@ -73,7 +76,7 @@ router.post('/requests', [
 });
 
 router.post('/cancel/:id', async (req, res) => {
-    if (!req.user || !req.user.isStudent) {
+    if (!req.user || !req.user.isStudent) { //TODO I think this is redundant...
         res.status(401);
     } else {
         console.log('Session cancel request for sess ' + req.params.id);

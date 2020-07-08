@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport'); //Used for authentication
 const cookieSession = require('cookie-session'); //Allows for the storage of cookies, keeping users signed in
+const MongoClient = require('mongodb').MongoClient;
 const app = express(); //Web framework
 const PORT = process.env.PORT || 3000; //The port for the server to run on. If deployed, it will use that port.
 require('dotenv').config(); //Creates environment variables
@@ -43,4 +44,13 @@ app.get('/logout', (req, res) => { //When a user accesses /logout, sign them out
     res.redirect('/');
 });
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+MongoClient.connect(process.env.MONGODB_URI, { useUnifiedTopology: true }, (err, client) => {
+    if (err) {
+        console.error('Could not connect to db.', err);
+        return;
+    }
+    console.log('DB Connected');
+    global.globalDB = client.db(process.env.MONGODB_NAME); //This will be available later in the global variable globalDB
+    app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+});
+
