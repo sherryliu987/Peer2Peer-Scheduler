@@ -54,7 +54,7 @@
 
             <br>
             <br>
-            <input type='submit' value='Submit'>
+            <input type='submit' id='submit' value='Submit'>
         </form>
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -79,9 +79,11 @@
                 });
             });
             //I don't know how to use JQuery, so I'm just sticking with ugly, plain JS
-            document.getElementById('timezone').innerText = 'Please use the ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ' time zone.';
+            const timezone = document.getElementById('timezone')
+            timezone.innerText = 'Please use the ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ' time zone.';
             document.getElementById('requestForm').onsubmit = () => {
                 document.getElementById('datetimeMS').value = new Date(document.getElementById('datetime').value).getTime();
+                document.getElementById('submit').disabled = true;
             }
         </script>
     </body>
