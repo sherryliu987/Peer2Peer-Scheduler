@@ -45,17 +45,18 @@ async function cancelSession(sessionId, studentId) {
         try {
             objectId = new ObjectId(sessionId);
         } catch (err) {
-            return 404; //An invalid ObjectId was passed in
+            return 'Invalid session id. Session not found.'; //An invalid ObjectId was passed in
         }
         const session = await sessionCollection.findOne({ _id: objectId });
-        if (session == null) return 404;
-        if (session.student.id == studentId) { //Make sure the student created that request
-            await sessionCollection.updateOne({ _id: objectId, "student.id": studentId }, { $set: { cancelled: true }});
-            return -1; //-1 means no error
-        }
-        return 401;
+        if (session == null) return 'Session not found.';
+        if (session.student.id != studentId) //Make sure the student created that request
+            return 'You are not authorized to cancel this session.';
+
+        await sessionCollection.updateOne({ _id: objectId, "student.id": studentId }, { $set: { cancelled: true }});
+        return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);
+        return 'Error cancelling session.';
     }
 }
 
@@ -74,7 +75,7 @@ async function acceptSession(sessionId, mentorId) {
         if (session.cancelled) return 'Session has already been cancelled.';
         if (session.done) return 'Session has already been complete.';
         if (session.mentorConfirm) return 'Session already confirmed.'
-        if (session.mentors[0].id != mentorId) //Make sure the student created that request
+        if (session.mentors[0].id != mentorId) //Make sure it is asking this mentor to accept
             return 'You are not authorized to accept this session.';
         
         await sessionCollection.updateOne({ _id: objectId }, { $set: { mentorConfirm: true }});
@@ -99,11 +100,10 @@ async function rejectSession(sessionId, mentorId) {
         if (session.cancelled) return 'Session has already been cancelled.';
         if (session.done) return 'Session has already been complete.';
         if (session.mentorConfirm) return 'Session already confirmed.'
-        if (session.mentors[0].id != mentorId) //Make sure the student created that request
-            return 'You are not authorized to accept this session.';
+        if (session.mentors[0].id != mentorId) //Make sure it is asking this mentor to reject
+            return 'You are not authorized to reject this session.';
 
-        //await sessionCollection.updateOne({ _id: objectId }, { $set: { mentorConfirm: true }});
-        //This removes the first elements of the mentors list
+        //This removes the first element of the mentors list
         await sessionCollection.updateOne({ _id: objectId }, { $pop: { mentors: -1 } });
         return -1; //-1 means no error
     } catch (err) {
@@ -111,6 +111,7 @@ async function rejectSession(sessionId, mentorId) {
         return 'Error cancelling session.';
     }
 }
+
 async function getUserSessions(studentId) {
     try {
         const sessionCollection = globalDB.collection('sessions');

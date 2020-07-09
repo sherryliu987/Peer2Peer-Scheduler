@@ -26,7 +26,7 @@ router.get('/requests', (req, res) => {
         errors: []
     });
 });
-router.post('/requests', [ //TODO Prevent student from spamming submit request button and creating duplicate requests
+router.post('/requests', [
     check('subject').trim().notEmpty().escape(),
     check('datetimeMS').trim().notEmpty().isNumeric()
 ], async (req, res) => {
@@ -79,12 +79,11 @@ router.post('/cancel/:id', async (req, res) => {
     if (!req.user || !req.user.isStudent) { //TODO I think this is redundant...
         res.status(401);
     } else {
-        console.log('Session cancel request for sess ' + req.params.id);
-        const errorCode = await db.cancelSession(req.params.id, req.user.googleId);
-        if (errorCode == -1) {
+        const error = await db.cancelSession(req.params.id, req.user.googleId);
+        if (error == -1) {
             res.redirect('/student');
         } else {
-            res.status(errorCode);
+            res.send(error);
         }
     }
 });
