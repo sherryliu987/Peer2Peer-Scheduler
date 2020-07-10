@@ -8,6 +8,8 @@
 .session {
     background-color: #E0E0E0;
     padding: 5px;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
 }
 </style>
   </head>
@@ -28,6 +30,7 @@
             <p>PeerLeader: <%=session.peerLeader%></p>
             <p>Subject: <%=session.subject%></p>
             <p class='datetime'><%=session.dateTime%></p>
+            <p>Length: <%=session.length%> minutes</p>
             <% if (showCancel) { %>
                 <form action='/student/cancel/<%=session.id%>' method='POST'>
                     <input type='submit' value='Cancel Session'>

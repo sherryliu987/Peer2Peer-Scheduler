@@ -28,24 +28,25 @@ router.get('/requests', (req, res) => {
 });
 router.post('/requests', [
     check('subject').trim().notEmpty().escape(),
-    check('datetimeMS').trim().notEmpty().isNumeric()
+    check('datetimeMS').trim().notEmpty().isNumeric(),
+    check('length').trim().notEmpty().isNumeric()
 ], async (req, res) => {
     if (!req.user || !req.user.isStudent) {
         res.status(401);
     } else {
-
-        const errors = validationResult(req);
         const dateMS = parseInt(req.body.datetimeMS);
         const currentTime = new Date().getTime();
 
-        if (!errors.isEmpty() || dateMS <= currentTime) {
-            let allErrors = errors.array().map(e => e.param);
-            if (dateMS <= currentTime) allErrors.push('tooEarly');
+        const errors = validationResult(req).array().map(e => e.param);
+        if (dateMS <= currentTime) errors.push('tooEarly');
+        if (!['30', '45', '60'].includes(req.body.length)) errors.push('length');
+
+        if (errors.length > 0) {
             res.render('student/request.ejs', {
                 signedIn: (req.user != null),
                 ...req.user,
                 values: req.body,
-                errors: allErrors
+                errors
             });
             return;
         }
@@ -67,6 +68,7 @@ router.post('/requests', [
             peerLeaderConfirm: false,
             dateTime: dateMS,
             subject: req.body.subject,
+            length: parseInt(req.body.length),
             cancelled: false,
             done: false
         });

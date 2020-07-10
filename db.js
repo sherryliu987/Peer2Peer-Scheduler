@@ -37,7 +37,6 @@ async function addSession(sessionData) {
     }
 }
 
-//TODO Refactor cancelSession errors
 async function cancelSession(sessionId, studentId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -130,7 +129,8 @@ async function getUserSessions(studentId) {
                     mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
                     peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
                     dateTime: doc.dateTime,
-                    subject: doc.subject
+                    subject: doc.subject,
+                    length: doc.length
                 }
                 if (doc.cancelled) sessions.cancelled.push(data);
                 else if (doc.done) sessions.past.push(data);
@@ -166,7 +166,8 @@ async function getMentorSessions(mentorId) {
                     student: doc.student,
                     peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
                     dateTime: doc.dateTime,
-                    subject: doc.subject
+                    subject: doc.subject,
+                    length: doc.length
                 }
                 if (doc.cancelled && doc.mentorConfirm) sessions.cancelled.push(data);
                 else if (doc.done && doc.mentorConfirm) sessions.past.push(data);
@@ -182,7 +183,7 @@ async function getMentorSessions(mentorId) {
         console.error('Error adding session.', err);
     }
 }
-
+//TODO Ensure that mentors/peerleaders do not overlap sessions
 async function getMentors(dateTime, subject, studentId) {
     try {
         const userCollection = globalDB.collection('users');
