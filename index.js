@@ -9,6 +9,7 @@ require('./passport-setup'); //Configures passport to authenticate with google a
 
 const studentRouter = require('./routes/student.js');
 const mentorRouter = require('./routes/mentor.js');
+const peerLeaderRouter = require('./routes/peerLeader.js');
 const signupRouter = require('./routes/signup.js');
 
 app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 });
 app.use('/student', studentRouter); //When accessing a /student path, uses the routes from ./routes/student.js
 app.use('/mentor', mentorRouter); //When accessing a /mentor path, uses the routes from ./routes/mentor.js
+app.use('/peerleader', peerLeaderRouter); //When accessing a /peerleader path, uses the routes from ./routes/peerLeader.js
 app.use('/signup', signupRouter); //When accessing a /signup path, use the routes from ./routes/signup.js
 
 app.get('/failed', (req, res) => res.send('You failed to log in!'));

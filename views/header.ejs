@@ -23,6 +23,11 @@
             <% } else { %>
                 <a href='/signup/mentor'>Apply for Mentor</a>
             <% } %>
+
+            <% if (isPeerLeader) { %>
+                <a href='/peerleader'>Peer Leader Home</a>
+            <% } %>
+
             <a href='/logout'>Logout</a>
         <% } %>
     </div>

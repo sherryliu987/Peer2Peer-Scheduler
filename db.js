@@ -143,7 +143,7 @@ async function getUserSessions(studentId) {
         sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
         return sessions;
     } catch (err) {
-        console.error('Error adding session.', err);
+        console.error('Error when getting user sessions.', err);
     }
 }
 
@@ -180,9 +180,47 @@ async function getMentorSessions(mentorId) {
         sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
         return sessions;
     } catch (err) {
-        console.error('Error adding session.', err);
+        console.error('Error when getting mentor sessions.', err);
     }
 }
+//TODO Make a single getSessions function
+async function getPeerLeaderSessions(peerLeaderId) {
+    try {
+        const sessionCollection = globalDB.collection('sessions');
+        let sessions = {
+            upcoming: [],
+            past: [],
+            cancelled: []
+        }
+        const cursor = await sessionCollection.find({ 'peerLeaders.0.id': { $eq: peerLeaderId} });
+        await cursor.forEach((doc, err) => {
+            if (err) {
+                console.error('Error when getting peer leader sessions.', err);
+            } else {
+                const data = {
+                    id: doc._id,
+                    confirm: doc.peerLeaderConfirm,
+                    student: doc.student,
+                    mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
+                    dateTime: doc.dateTime,
+                    subject: doc.subject,
+                    length: doc.length
+                }
+                if (doc.cancelled && doc.peerLeaderConfirm) sessions.cancelled.push(data);
+                else if (doc.done && doc.peerLeaderConfirm) sessions.past.push(data);
+                else if (!doc.cancelled) sessions.upcoming.push(data);
+            }
+        });
+        //Sort sessions with newest first
+        sessions.upcoming.sort((a, b) => b.dateTime - a.dateTime);
+        sessions.past.sort((a, b) => b.dateTime - a.dateTime);
+        sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
+        return sessions;
+    } catch (err) {
+        console.error('Error when getting peer leader sessions', err);
+    }
+}
+
 //TODO Ensure that mentors/peerleaders do not overlap sessions
 async function getMentors(dateTime, subject, studentId) {
     try {
@@ -232,4 +270,4 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
-module.exports = { addUser, findUser, updateUser, addSession, cancelSession, acceptSession, rejectSession, getUserSessions, getMentorSessions, getMentors, getPeerLeaders };
+module.exports = { addUser, findUser, updateUser, addSession, cancelSession, acceptSession, rejectSession, getUserSessions, getMentorSessions, getPeerLeaderSessions, getMentors, getPeerLeaders };

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mentor Home</title>
+<style>
+<%- include('../header.css'); -%>
+.session {
+    background-color: #E0E0E0;
+    padding: 5px;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+</style>
+  </head>
+  <body>
+     <%- include('../header'); -%>
+    <h1>Welcome, Peer Leader!</h1>
+    <img src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
+    <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
+    <p>You are in grade <%= grade %>, go to <%= school %>  and live in the state <%= state %></p>
+    <button onclick="window.location.href='/'">Main</button>
+    <button onclick="window.location.href='/logout'">Log out</button>
+
+    <% function showSession(session, showButtons) { %>
+        <div class="session">
+            <p>Student: <%=session.student.name%>, in grade <%=session.student.grade%></p>
+            <p>PeerLeader: <%=session.peerLeader%></p>
+            <p>Subject: <%=session.subject%></p>
+            <p class='datetime'><%=session.dateTime%></p>
+            <p>Length: <%=session.length%> minutes</p>
+            <% if (showButtons) { %>
+                <% if (session.confirm) { %>
+                    <p>Session Confirmed!</p>
+                <% } else { %>
+                    <form action='/mentor/accept/<%=session.id%>' method='POST'>
+                        <input type='submit' value='Accept Session'>
+                    </form>
+                    <form action='/mentor/reject/<%=session.id%>' method='POST'>
+                        <input type='submit' value='Reject Session'>
+                    </form>
+                <% } %>
+            <% } %>
+        </div>
+    <% } %>
+
+    <% if (sessions.upcoming.length > 0) { %>
+        <h2>Upcoming Sessions</h2> 
+        <% for (const session of sessions.upcoming) showSession(session, true) %> 
+    <% } %>
+    <% if (sessions.past.length > 0) { %>
+        <h2>Past Sessions</h2> 
+        <% for (const session of sessions.past) showSession(session, false) %> 
+    <% } %>
+    <% if (sessions.cancelled.length > 0) { %>
+        <h2>Cancelled Sessions</h2> 
+        <% for (const session of sessions.cancelled) showSession(session, false) %> 
+    <% } %>
+    <script>
+    const datetimes = document.getElementsByClassName('datetime');
+    for (const element of datetimes) {
+        element.innerText = 'Date/Time: ' + new Date(parseInt(element.innerText)).toLocaleString();
+    }
+    </script>
+
+  </body>
+</html>
