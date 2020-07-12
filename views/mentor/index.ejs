@@ -15,7 +15,7 @@
   </head>
   <body>
      <%- include('../header'); -%>
-    <!-- think about making it automatically reject if a mentor doesn't respond within 3 days! -->
+    <!-- TODO think about making it automatically reject if a mentor doesn't respond within 3 days! -->
     <h1>Hello Mentor!</h1>
     <img src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
     <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
@@ -31,7 +31,7 @@
             <p class='datetime'><%=session.dateTime%></p>
             <p>Length: <%=session.length%> minutes</p>
             <% if (showButtons) { %>
-                <% if (session.confirm) { %>
+                <% if (session.mentorConfirm) { %>
                     <p>Session Confirmed!</p>
                 <% } else { %>
                     <form action='/mentor/accept/<%=session.id%>' method='POST'>

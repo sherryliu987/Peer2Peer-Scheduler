@@ -9,7 +9,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
-    const sessions = await db.getPeerLeaderSessions(req.user.googleId);
+    const sessions = await db.getSessions('peerLeader', req.user.googleId);
     res.render('peerLeader/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,

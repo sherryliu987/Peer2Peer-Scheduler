@@ -10,7 +10,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', async (req, res) => { //When a user accesses /user, display a custom page with ejs
-    const sessions = await db.getUserSessions(req.user.googleId);
+    const sessions = await db.getSessions('student', req.user.googleId);
     res.render('student/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,
@@ -54,8 +54,6 @@ router.post('/requests', [
         //TODO Error checking to make sure req.body.subject is a real subject
         const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
         const peerLeaders = await db.getPeerLeaders(dateMS);
-        console.log('Found mentors', mentors);
-        console.log('Found peer leaders', peerLeaders);
         await db.addSession({
             student: {
                 id: req.user.googleId,

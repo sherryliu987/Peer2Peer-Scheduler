@@ -30,7 +30,7 @@
             <p class='datetime'><%=session.dateTime%></p>
             <p>Length: <%=session.length%> minutes</p>
             <% if (showButtons) { %>
-                <% if (session.confirm) { %>
+                <% if (session.peerLeaderConfirm) { %>
                     <p>Session Confirmed!</p>
                 <% } else { %>
                     <form action='/peerleader/accept/<%=session.id%>' method='POST'>

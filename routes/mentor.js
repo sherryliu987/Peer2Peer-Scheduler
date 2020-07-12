@@ -9,7 +9,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', async (req, res) => { //When a user accesses /user, display a custom page with ejs
-    const sessions = await db.getMentorSessions(req.user.googleId);
+    const sessions = await db.getSessions('mentor', req.user.googleId);
     res.render('mentor/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,

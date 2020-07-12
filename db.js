@@ -140,7 +140,7 @@ async function rejectSession(sessionId, type, googleId) {
 }
 
 //Gets an object with the data about all of that users sessions
-async function getUserSessions(studentId) {
+async function getSessions(type, googleId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
         let sessions = {
@@ -148,96 +148,40 @@ async function getUserSessions(studentId) {
             past: [],
             cancelled: []
         }
-        const cursor = await sessionCollection.find({ 'student.id': studentId });
-        await cursor.forEach((doc, err) => {
-            if (err) {
-                console.error('Error when getting user sessions.', err);
-            } else {
-                const data = {
-                    id: doc._id,
-                    mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
-                    peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
-                    dateTime: doc.dateTime,
-                    subject: doc.subject,
-                    length: doc.length
-                }
-                if (doc.cancelled) sessions.cancelled.push(data);
-                else if (doc.done) sessions.past.push(data);
-                else sessions.upcoming.push(data);
-            }
-        });
-        //Sort sessions with newest first
-        sessions.upcoming.sort((a, b) => b.dateTime - a.dateTime);
-        sessions.past.sort((a, b) => b.dateTime - a.dateTime);
-        sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
-        return sessions;
-    } catch (err) {
-        console.error('Error when getting user sessions.', err);
-    }
-}
+        let cursor;
+        if (type == 'student')
+            cursor = await sessionCollection.find({ 'student.id': googleId });
+        else if (type == 'mentor')
+            cursor = await sessionCollection.find({ 'mentors.0.id': {$eq: googleId} });
+        else if (type == 'peerLeader')
+            cursor = await sessionCollection.find({ 'peerLeaders.0.id': {$eq: googleId} });
+        else
+            console.error('Error when getting sessions. type should be "student", "mentor", or "peerLeader"');
 
-async function getMentorSessions(mentorId) {
-    try {
-        const sessionCollection = globalDB.collection('sessions');
-        let sessions = {
-            upcoming: [],
-            past: [],
-            cancelled: []
-        }
-        const cursor = await sessionCollection.find({ 'mentors.0.id': { $eq: mentorId} });
         await cursor.forEach((doc, err) => {
             if (err) {
-                console.error('Error when getting mentor sessions.', err);
+                console.error('Error when getting sessions.', err);
             } else {
                 const data = {
                     id: doc._id,
-                    confirm: doc.mentorConfirm,
-                    student: doc.student,
-                    peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
-                    dateTime: doc.dateTime,
-                    subject: doc.subject,
-                    length: doc.length
-                }
-                if (doc.cancelled && doc.mentorConfirm) sessions.cancelled.push(data);
-                else if (doc.done && doc.mentorConfirm) sessions.past.push(data);
-                else if (!doc.cancelled) sessions.upcoming.push(data);
-            }
-        });
-        //Sort sessions with newest first
-        sessions.upcoming.sort((a, b) => b.dateTime - a.dateTime);
-        sessions.past.sort((a, b) => b.dateTime - a.dateTime);
-        sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
-        return sessions;
-    } catch (err) {
-        console.error('Error when getting mentor sessions.', err);
-    }
-}
-//TODO Make a single getSessions function
-async function getPeerLeaderSessions(peerLeaderId) {
-    try {
-        const sessionCollection = globalDB.collection('sessions');
-        let sessions = {
-            upcoming: [],
-            past: [],
-            cancelled: []
-        }
-        const cursor = await sessionCollection.find({ 'peerLeaders.0.id': { $eq: peerLeaderId} });
-        await cursor.forEach((doc, err) => {
-            if (err) {
-                console.error('Error when getting peer leader sessions.', err);
-            } else {
-                const data = {
-                    id: doc._id,
-                    confirm: doc.peerLeaderConfirm,
                     student: doc.student,
                     mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
+                    mentorConfirm: doc.mentorConfirm,
+                    peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
+                    peerLeaderConfirm: doc.peerLeaderConfirm,
                     dateTime: doc.dateTime,
                     subject: doc.subject,
                     length: doc.length
                 }
-                if (doc.cancelled && doc.peerLeaderConfirm) sessions.cancelled.push(data);
-                else if (doc.done && doc.peerLeaderConfirm) sessions.past.push(data);
-                else if (!doc.cancelled) sessions.upcoming.push(data);
+                if (type == 'mentor' && !doc.mentorConfirm) {
+                    if (!doc.cancelled && !doc.done) sessions.upcoming.push(data);
+                } else if (type == 'peerLeader' && !doc.peerLeaderConfirm) {
+                    if (!doc.cancelled && !doc.done) sessions.upcoming.push(data);
+                } else {
+                    if (doc.cancelled) sessions.cancelled.push(data);
+                    else if (doc.done) sessions.past.push(data);
+                    else sessions.upcoming.push(data);
+                }
             }
         });
         //Sort sessions with newest first
@@ -246,7 +190,7 @@ async function getPeerLeaderSessions(peerLeaderId) {
         sessions.cancelled.sort((a, b) => b.dateTime - a.dateTime);
         return sessions;
     } catch (err) {
-        console.error('Error when getting peer leader sessions', err);
+        console.error('Error when getting sessions.', err);
     }
 }
 
@@ -301,4 +245,10 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
-module.exports = { addUser, findUser, updateUser, addSession, cancelSession, acceptSession, rejectSession, getUserSessions, getMentorSessions, getPeerLeaderSessions, getMentors, getPeerLeaders };
+module.exports = {
+    addUser, findUser, updateUser,
+    addSession, cancelSession,
+    acceptSession, rejectSession,
+    getSessions,
+    getMentors, getPeerLeaders
+};
