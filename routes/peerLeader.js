@@ -17,5 +17,23 @@ router.get('/', async (req, res) => { //When a user accesses /peerleader, displa
     });
 });
 
+router.post('/accept/:id', async (req, res) => {
+    const error = await db.acceptSession(req.params.id, 'peerLeader', req.user.googleId);
+    if (error == -1) {
+        res.redirect('/peerleader');
+    } else {
+        res.send(error);
+    }
+});
+
+router.post('/reject/:id', async (req, res) => {
+    const error = await db.rejectSession(req.params.id, 'peerLeader', req.user.googleId);
+    if (error == -1) {
+        res.redirect('/peerleader');
+    } else {
+        res.send(error);
+    }
+});
+
 module.exports = router; //Allows the router object to be accessed through require()
 

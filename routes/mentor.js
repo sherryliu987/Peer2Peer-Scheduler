@@ -18,8 +18,7 @@ router.get('/', async (req, res) => { //When a user accesses /user, display a cu
 });
 
 router.post('/accept/:id', async (req, res) => {
-    console.log('Session accept for sess ' + req.params.id);
-    const error = await db.acceptSession(req.params.id, req.user.googleId);
+    const error = await db.acceptSession(req.params.id, 'mentor', req.user.googleId);
     if (error == -1) {
         res.redirect('/mentor');
     } else {
@@ -28,8 +27,7 @@ router.post('/accept/:id', async (req, res) => {
 });
 //TODO Make it so that if you get sent to the homepage for not being logged in, it shows a message
 router.post('/reject/:id', async (req, res) => {
-    console.log('Session reject for sess ' + req.params.id);
-    const error = await db.rejectSession(req.params.id, req.user.googleId);
+    const error = await db.rejectSession(req.params.id, 'mentor', req.user.googleId);
     if (error == -1) {
         res.redirect('/mentor');
     } else {

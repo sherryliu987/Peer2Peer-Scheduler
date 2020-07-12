@@ -1,5 +1,6 @@
 const ObjectId = require('mongodb').ObjectId;
 
+//Fetches a user from the db by their googleId
 async function findUser(googleId) {
     try {
         const userCollection = globalDB.collection('users');
@@ -10,6 +11,7 @@ async function findUser(googleId) {
     }
 }
 
+//Addes a user object to the db
 async function addUser(userData) {
     try {
         const userCollection = globalDB.collection('users');
@@ -19,6 +21,7 @@ async function addUser(userData) {
     }
 }
 
+//Changes a user's data in the db based on the googleId
 async function updateUser(googleId, data) {
     try {
         const userCollection = globalDB.collection('users');
@@ -28,6 +31,7 @@ async function updateUser(googleId, data) {
     }
 }
 
+//Adds a session object to the sessions collection
 async function addSession(sessionData) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -37,6 +41,7 @@ async function addSession(sessionData) {
     }
 }
 
+//Sets a session to cancelled when requested by that user
 async function cancelSession(sessionId, studentId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -59,7 +64,8 @@ async function cancelSession(sessionId, studentId) {
     }
 }
 
-async function acceptSession(sessionId, mentorId) {
+//For a mentor or peer leader, confirms the session
+async function acceptSession(sessionId, type, googleId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
         let objectId;
@@ -73,11 +79,21 @@ async function acceptSession(sessionId, mentorId) {
         if (session == null) return 'Session not found.';
         if (session.cancelled) return 'Session has already been cancelled.';
         if (session.done) return 'Session has already been complete.';
-        if (session.mentorConfirm) return 'Session already confirmed.'
-        if (session.mentors[0].id != mentorId) //Make sure it is asking this mentor to accept
-            return 'You are not authorized to accept this session.';
-        
-        await sessionCollection.updateOne({ _id: objectId }, { $set: { mentorConfirm: true }});
+        if (type == 'mentor') {
+            if (session.mentorConfirm) return 'Session already confirmed.'
+            if (session.mentors[0].id != googleId) //Make sure it is asking this mentor to accept
+                return 'You are not authorized to accept this session.';
+            await sessionCollection.updateOne({ _id: objectId }, { $set: { mentorConfirm: true }});
+        } else if (type == 'peerLeader') {
+            if (session.peerLeaderConfirm) return 'Session already confirmed.'
+            if (session.peerLeaders[0].id != googleId) //Make sure it is asking this mentor to accept
+                return 'You are not authorized to accept this session.';
+            await sessionCollection.updateOne({ _id: objectId }, { $set: { peerLeaderConfirm: true }});
+        } else {
+            console.error('Invalid type when accepting session. Expected "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong. An invalid type was passed in.';
+        }
+
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);
@@ -85,7 +101,8 @@ async function acceptSession(sessionId, mentorId) {
     }
 }
 
-async function rejectSession(sessionId, mentorId) {
+//For a mentor or peer leader, rejects the sessions. The next best person will be picked
+async function rejectSession(sessionId, type, googleId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
         let objectId;
@@ -98,12 +115,23 @@ async function rejectSession(sessionId, mentorId) {
         if (session == null) return 'Session not found.';
         if (session.cancelled) return 'Session has already been cancelled.';
         if (session.done) return 'Session has already been complete.';
-        if (session.mentorConfirm) return 'Session already confirmed.'
-        if (session.mentors[0].id != mentorId) //Make sure it is asking this mentor to reject
-            return 'You are not authorized to reject this session.';
+        if (type == 'mentor') {
+            if (session.mentorConfirm) return 'Session already confirmed.'
+            if (session.mentors[0].id != googleId) //Make sure it is asking this mentor to reject
+                return 'You are not authorized to reject this session.';
+            //This removes the first element of the mentors list
+            await sessionCollection.updateOne({ _id: objectId }, { $pop: { mentors: -1 } });
+        } else if (type == 'peerLeader') {
+            if (session.peerLeaderConfirm) return 'Session already confirmed.'
+            if (session.peerLeaders[0].id != googleId) //Make sure it is asking this mentor to reject
+                return 'You are not authorized to reject this session.';
+            //This removes the first element of the peer leaders list
+            await sessionCollection.updateOne({ _id: objectId }, { $pop: { peerLeaders: -1 } });
+        } else {
+            console.error('Invalid type when rejecting session. Expected "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong. An invalid type was passed in.';
+        }
 
-        //This removes the first element of the mentors list
-        await sessionCollection.updateOne({ _id: objectId }, { $pop: { mentors: -1 } });
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);
@@ -111,6 +139,7 @@ async function rejectSession(sessionId, mentorId) {
     }
 }
 
+//Gets an object with the data about all of that users sessions
 async function getUserSessions(studentId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -222,6 +251,7 @@ async function getPeerLeaderSessions(peerLeaderId) {
 }
 
 //TODO Ensure that mentors/peerleaders do not overlap sessions
+//Get a list of mentors that are able to mentor a certain session
 async function getMentors(dateTime, subject, studentId) {
     try {
         const userCollection = globalDB.collection('users');
@@ -246,6 +276,7 @@ async function getMentors(dateTime, subject, studentId) {
     }
 }
 
+//Get a list of peer leaders that are able to oversee a certain session
 async function getPeerLeaders(dateTime) {
     try {
         const userCollection = globalDB.collection('users');
