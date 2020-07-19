@@ -109,6 +109,30 @@ async function rejectMentor(userObjectId) {
 }
 
 //For a mentor or peer leader, confirms the session
+async function doneSession(sessionId, peerLeaderId) {
+    try {
+        const sessionCollection = globalDB.collection('sessions');
+        let objectId;
+        try {
+            objectId = new ObjectId(sessionId);
+        } catch (err) {
+            return 'Session not found.'; //An invalid ObjectId was passed in
+        }
+        const session = await sessionCollection.findOne({ _id: objectId });
+        if (session == null) return 'Session not found.';
+        if (session.cancelled) return 'Session has been cancelled.';
+        if (session.done) return 'Session has already been complete.';
+        if (!session.peerLeaderConfirm || session.peerLeaders[0].id != peerLeaderId)
+            return 'That user does not have permission to complete this session.';
+        await sessionCollection.updateOne({ _id: objectId }, { $set: { done: true }});
+        return -1; //-1 means no error
+    } catch (err) {
+        console.error('Error marking session as done.', err);
+        return 'Error marking session as done.';
+    }
+}
+
+//For a mentor or peer leader, confirms the session
 async function acceptSession(sessionId, type, googleId) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -274,7 +298,6 @@ async function getAllMentors() {
     }
 }
 
-//TODO Ensure that mentors/peerleaders do not overlap sessions
 //Get a list of mentors that are able to mentor a certain session
 async function getMentors(dateTime, subject, studentId) {
     try {
@@ -328,7 +351,7 @@ async function getPeerLeaders(dateTime) {
 module.exports = {
     addUser, findUser, updateUser,
     addSession, cancelSession,
-    acceptSession, rejectSession,
+    doneSession, acceptSession, rejectSession,
     getSessions,
     getAllMentors, acceptMentor, rejectMentor,
     getMentors, getPeerLeaders

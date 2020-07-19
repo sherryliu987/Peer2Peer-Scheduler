@@ -34,9 +34,6 @@ router.post('/mentors/reject/:id', async (req, res) => {
     else res.send(error);
 });
 
-
-//TODO Allow peer leaders to mark a session as done
-
 router.get('/sessions', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
     const sessions = await db.getSessions('peerLeader', req.user.googleId);
     res.render('peerLeader/sessions.ejs', {
@@ -52,6 +49,11 @@ router.post('/sessions/accept/:id', async (req, res) => {
 });
 router.post('/sessions/reject/:id', async (req, res) => {
     const error = await db.rejectSession(req.params.id, 'peerLeader', req.user.googleId);
+    if (error == -1) res.redirect('/peerleader/sessions');
+    else res.send(error);
+});
+router.post('/sessions/done/:id', async (req, res) => {
+    const error = await db.doneSession(req.params.id, req.user.googleId);
     if (error == -1) res.redirect('/peerleader/sessions');
     else res.send(error);
 });

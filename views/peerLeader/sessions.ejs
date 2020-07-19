@@ -32,6 +32,9 @@
             <% if (showButtons) { %>
                 <% if (session.peerLeaderConfirm) { %>
                     <p>Session Confirmed!</p>
+                    <form action='/peerleader/sessions/done/<%=session.id%>' method='POST'>
+                        <input type='submit' value='Mark session as finished'>
+                    </form>
                 <% } else { %>
                     <form action='/peerleader/sessions/accept/<%=session.id%>' method='POST'>
                         <input type='submit' value='Accept Session'>
