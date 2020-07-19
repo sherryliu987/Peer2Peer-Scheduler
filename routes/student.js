@@ -76,16 +76,10 @@ router.post('/requests', [
 });
 
 router.post('/cancel/:id', async (req, res) => {
-    if (!req.user || !req.user.isStudent) { //TODO I think this is redundant...
-        res.status(401);
-    } else {
-        const error = await db.cancelSession(req.params.id, req.user.googleId);
-        if (error == -1) {
-            res.redirect('/student');
-        } else {
-            res.send(error);
-        }
-    }
+    const error = await db.cancelSession(req.params.id, req.user.googleId);
+    if (error == -1) res.redirect('/student');
+    else res.send(error);
+
 });
 
 module.exports = router; //Allows the router object to be accessed through require()
