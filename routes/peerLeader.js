@@ -8,15 +8,32 @@ router.use((req, res, next) => {
     else res.redirect('/'); //If not logged in, send to main page
 });
 
-router.get('/', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
-    const sessions = await db.getSessions('peerLeader', req.user.googleId);
+router.get('/', (req, res) => {
     res.render('peerLeader/index.ejs', {
+        signedIn: (req.user != null),
+        ...req.user
+    });
+});
+
+router.get('/sessions', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
+    const sessions = await db.getSessions('peerLeader', req.user.googleId);
+    res.render('peerLeader/sessions.ejs', {
         signedIn: (req.user != null),
         ...req.user,
         sessions
     });
 });
 
+router.get('/mentors', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
+    const mentors = await db.getAllMentors();
+    res.render('peerLeader/mentors.ejs', {
+        signedIn: (req.user != null),
+        ...req.user,
+        mentors
+    });
+});
+
+//TODO Allow peer leaders to mark a session as done
 router.post('/accept/:id', async (req, res) => {
     const error = await db.acceptSession(req.params.id, 'peerLeader', req.user.googleId);
     if (error == -1) {

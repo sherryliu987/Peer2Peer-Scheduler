@@ -194,6 +194,41 @@ async function getSessions(type, googleId) {
     }
 }
 
+async function getAllMentors() {
+    try {
+        const userCollection = globalDB.collection('users');
+        let mentors = {
+            isMentor: [],
+            applied: []
+        };
+        const cursor = await userCollection.find({
+            appliedMentor: true
+        });
+        await cursor.forEach((doc, err) => {
+            if (err) {
+                console.error('Error when iterating over all mentors.', err);
+            } else { //Make sure a mentor does not mentor themself
+                const data = {
+                    name: doc.firstName + ' ' + doc.lastName,
+                    email: doc.email,
+                    grade: doc.grade,
+                    phone: doc.phone,
+                    school: doc.school,
+                    state: doc.state,
+                    availability: doc.availability,
+                    subjects: doc.subjects
+                }
+                if (doc.isMentor) mentors.isMentor.push(data);
+                else if (doc.appliedMentor) mentors.applied.push(data);
+                else console.error('Error when iterating over all mentors. A user who has not applied to be mentor was found.');
+            }
+        });
+        return mentors;
+    } catch (err) {
+        console.error('Error getting all mentors.', err);
+    }
+}
+
 //TODO Ensure that mentors/peerleaders do not overlap sessions
 //Get a list of mentors that are able to mentor a certain session
 async function getMentors(dateTime, subject, studentId) {
@@ -250,5 +285,6 @@ module.exports = {
     addSession, cancelSession,
     acceptSession, rejectSession,
     getSessions,
+    getAllMentors,
     getMentors, getPeerLeaders
 };

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mentor Home</title>
+<style>
+<%- include('../header.css'); -%>
+.mentor {
+    background-color: #E0E0E0;
+    padding: 5px;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+</style>
+  </head>
+  <body>
+     <%- include('../header'); -%>
+    <h1>Welcome, Peer Leader!</h1>
+    <h3>Here is a list of all the current mentors, and mentor applications.</h3>
+    <button onclick="window.location.href='/'">Main</button>
+    <button onclick="window.location.href='/logout'">Log out</button>
+
+    <% function showMentor(mentor, showButtons) { %>
+        <div class="mentor">
+            <p>Mentor: <%=mentor.name%><p>
+            <p>Grade: <%=mentor.grade%><p>
+            <p>Email: <%=mentor.email%><p>
+            <p>Phone: <%=mentor.phone%><p>
+            <p>School: <%=mentor.school%><p>
+            <p>State: <%=mentor.state%><p>
+            <p>Availability: <%=mentor.availability%><p>
+            <p>Subjects: <%=mentor.subjects%><p>
+        </div>
+    <% } %>
+
+    <% if (mentors.applied.length > 0) { %>
+        <h2>Mentors Applications</h2> 
+        <% for (const mentor of mentors.applied) showMentor(mentor, true) %> 
+    <% } %>
+    <% if (mentors.isMentor.length > 0) { %>
+        <h2>Current Mentors</h2> 
+        <% for (const mentor of mentors.isMentor) showMentor(mentor, false) %> 
+    <% } %>
+    </script>
+
+  </body>
+</html>
