@@ -64,6 +64,50 @@ async function cancelSession(sessionId, studentId) {
     }
 }
 
+//A peer leader uses this function to accept a mentor applicaiton.
+async function acceptMentor(userObjectId) {
+    try {
+        const userCollection = globalDB.collection('users');
+        let objectId;
+        try {
+            objectId = new ObjectId(userObjectId);
+        } catch (err) {
+            return 'User not found.'; //An invalid ObjectId was passed in
+        }
+        const user = await userCollection.findOne({ _id: objectId });
+        if (user == null) return 'User not found.';
+        if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
+        if (user.isMentor) return 'That user is already a mentor.';
+        await userCollection.updateOne({ _id: objectId }, { $set: { isMentor: true }});
+        return -1; //-1 means no error
+    } catch (err) {
+        console.error('Error accepting mentor.', err);
+        return 'Error accepting mentor.';
+    }
+}
+
+//A peer leader uses this function to reejct a mentor applicaiton.
+async function rejectMentor(userObjectId) {
+    try {
+        const userCollection = globalDB.collection('users');
+        let objectId;
+        try {
+            objectId = new ObjectId(userObjectId);
+        } catch (err) {
+            return 'User not found.'; //An invalid ObjectId was passed in
+        }
+        const user = await userCollection.findOne({ _id: objectId });
+        if (user == null) return 'User not found.';
+        if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
+        if (user.isMentor) return 'That user is already a mentor.';
+        await userCollection.updateOne({ _id: objectId }, { $set: { appliedMentor: false }});
+        return -1; //-1 means no error
+    } catch (err) {
+        console.error('Error rejecting mentor.', err);
+        return 'Error rejecting mentor.';
+    }
+}
+
 //For a mentor or peer leader, confirms the session
 async function acceptSession(sessionId, type, googleId) {
     try {
@@ -216,7 +260,8 @@ async function getAllMentors() {
                     school: doc.school,
                     state: doc.state,
                     availability: doc.availability,
-                    subjects: doc.subjects
+                    subjects: doc.subjects,
+                    id: doc._id //Note: This uses the ObjectId, NOT the googleId!
                 }
                 if (doc.isMentor) mentors.isMentor.push(data);
                 else if (doc.appliedMentor) mentors.applied.push(data);
@@ -285,6 +330,6 @@ module.exports = {
     addSession, cancelSession,
     acceptSession, rejectSession,
     getSessions,
-    getAllMentors,
+    getAllMentors, acceptMentor, rejectMentor,
     getMentors, getPeerLeaders
 };

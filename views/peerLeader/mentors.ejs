@@ -30,6 +30,14 @@
             <p>State: <%=mentor.state%><p>
             <p>Availability: <%=mentor.availability%><p>
             <p>Subjects: <%=mentor.subjects%><p>
+            <% if (showButtons) { %>
+                <form action='/peerleader/mentors/accept/<%=mentor.id%>' method='POST'>
+                    <input type='submit' value='Accept Application'>
+                </form>
+                <form action='/peerleader/mentors/reject/<%=mentor.id%>' method='POST'>
+                    <input type='submit' value='Reject Application'>
+                </form>
+            <% } %>
         </div>
     <% } %>
 
