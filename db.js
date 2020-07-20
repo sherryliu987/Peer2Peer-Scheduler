@@ -317,7 +317,7 @@ async function getMentors(dateTime, subject, studentId) {
                 mentors.push({ id: doc.googleId, name: `${doc.firstName} ${doc.lastName}` });
             }
         });
-        return mentors.slice(0, 3); //TODO Add a system to pick mentors based on how much they've worked and rating
+        return mentors.slice(0, 3);
     } catch (err) {
         console.error('Error getting mentors.', err);
     }

@@ -7,6 +7,16 @@ const PORT = process.env.PORT || 3000; //The port for the server to run on. If d
 require('dotenv').config(); //Creates environment variables
 require('./passport-setup'); //Configures passport to authenticate with google and use mongodb
 
+/* TODO List
+ * Add ratings (student -> mentor, student -> session, mentor -> session, peerleader -> tutor)
+ * Pick mentors based on ratings/last sessions
+ * Add emails
+ * Add peerleader signup
+ * Add footer
+ * Add changing account info
+ * Cancel Sessions if not mentor/peerleader found
+ */
+
 const studentRouter = require('./routes/student.js');
 const mentorRouter = require('./routes/mentor.js');
 const peerLeaderRouter = require('./routes/peerLeader.js');

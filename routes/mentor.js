@@ -25,7 +25,7 @@ router.post('/accept/:id', async (req, res) => {
         res.send(error);
     }
 });
-//TODO Make it so that if you get sent to the homepage for not being logged in, it shows a message
+
 router.post('/reject/:id', async (req, res) => {
     const error = await db.rejectSession(req.params.id, 'mentor', req.user.googleId);
     if (error == -1) {

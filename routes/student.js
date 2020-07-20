@@ -51,7 +51,6 @@ router.post('/requests', [
             return;
         }
         
-        //TODO Error checking to make sure req.body.subject is a real subject
         const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
         const peerLeaders = await db.getPeerLeaders(dateMS);
         await db.addSession({
