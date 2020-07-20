@@ -32,6 +32,7 @@ app.use(cookieSession({
 
 app.use(passport.initialize()); //Initialize and start passport
 app.use(passport.session());
+app.use(express.static('static'));
 
 app.set('view engine', 'ejs'); //Allows us to render .ejs files
 app.get('/', (req, res) => {
