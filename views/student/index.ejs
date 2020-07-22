@@ -48,7 +48,8 @@
         <% for (const session of sessions.past) { %>
             <div class="session">
                 <% showSessionDetails(session); %> 
-                <% if (session.studentToMentorRating == -1 && session.studentToSessionRating == -1) { %>
+                <% if (!session.ratings.hasOwnProperty('studentToMentor') &&
+                        !session.ratings.hasOwnProperty('studnetToSession')) { %>
                 <form action='/student/rate/<%=session.id%>' method='POST'>
                     <label for='mentorRating'>Mentor rating: </label>
                     <select id='mentorRating' name='mentorRating'>
@@ -70,8 +71,8 @@
                     <input type='submit' value='Rate session'>
                 </form>
                 <% } else { %>
-                    <p>Mentor Rating: <%=session.studentToMentorRating%></p>
-                    <p>Overall Session Rating: <%=session.studentToSessionRating%></p>
+                    <p>Mentor Rating: <%=session.ratings.studentToMentor%></p>
+                    <p>Overall Session Rating: <%=session.ratings.studentToSession%></p>
                 <% } %>
             </div>
         <% } %>

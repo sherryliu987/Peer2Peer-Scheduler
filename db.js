@@ -240,8 +240,7 @@ async function getSessions(type, googleId) {
                     dateTime: doc.dateTime,
                     subject: doc.subject,
                     length: doc.length,
-                    studentToMentorRating: doc.hasOwnProperty('studentToMentorRating') ? doc.studentToMentorRating : -1,
-                    studentToSessionRating: doc.hasOwnProperty('studentToSessionRating') ? doc.studentToSessionRating : -1,
+                    ratings: doc.ratings
                 }
                 if (type == 'mentor' && !doc.mentorConfirm) {
                     if (!doc.cancelled && !doc.done) sessions.upcoming.push(data);
@@ -367,11 +366,23 @@ async function rateSession(googleId, type, sessionId, ratings) {
         if (type == 'student') {
             if (session.student.id != googleId) //Make sure it is asking this mentor to accept
                 return 'You are not authorized to rate this session as a student.';
-            if (session.hasOwnProperty('studentToSessionRating') || session.hasOwnProperty('studentToMentorRating'))
+            if (session.ratings.hasOwnProperty('studentToSession') ||
+                session.ratings.hasOwnProperty('studentToMentor'))
                 return 'This session has already been rated by the student.';
-            await sessionCollection.updateOne({ _id: objectId }, { $set: ratings } );
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.studentToMentor': ratings.studentToMentor,
+                    'ratings.studentToSession': ratings.studentToSession
+                }});
         } else if (type == 'mentor') {
-
+            if (!session.mentorConfirm || session.mentors[0].id != googleId) //Make sure it is asking this mentor to accept
+                return 'You are not authorized to rate this session as a mentor.';
+            if (session.ratings.hasOwnProperty('mentorToSession'))
+                return 'This session has already been rated by the mentor.';
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.mentorToSession': ratings.mentorToSession
+                }});
         } else if (type == 'peerLeader' ) {
 
         } else {

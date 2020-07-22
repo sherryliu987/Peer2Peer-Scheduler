@@ -24,8 +24,8 @@ router.post('/rate/:id', async (req, res) => {
         const sessionRating = parseInt(req.body.sessionRating);
 
         const error = await db.rateSession(req.user.googleId, 'student', req.params.id, {
-            studentToMentorRating: mentorRating,
-            studentToSessionRating: sessionRating
+            studentToMentor: mentorRating,
+            studentToSession: sessionRating
         });
         if (error == -1) res.redirect('/student');
         else res.send(error);
@@ -80,7 +80,8 @@ router.post('/requests', [
         subject: req.body.subject,
         length: parseInt(req.body.length),
         cancelled: false,
-        done: false
+        done: false,
+        ratings: {}
     });
     //Update DB with information
     res.redirect('/student');
