@@ -17,6 +17,22 @@ router.get('/', async (req, res) => { //When a user accesses /user, display a cu
         sessions
     });
 });
+router.post('/rate/:id', async (req, res) => {
+    const possibleRatings = ['1', '2', '3', '4', '5'];
+    if (possibleRatings.includes(req.body.mentorRating) && possibleRatings.includes(req.body.sessionRating)) {
+        const mentorRating = parseInt(req.body.mentorRating);
+        const sessionRating = parseInt(req.body.sessionRating);
+
+        const error = await db.rateSession(req.user.googleId, 'student', req.params.id, {
+            studentToMentorRating: mentorRating,
+            studentToSessionRating: sessionRating
+        });
+        if (error == -1) res.redirect('/student');
+        else res.send(error);
+    } else {
+        res.send('Please enter a valid rating. Either "1", "2", "3", "4", or "5"');
+    }
+});
 
 router.get('/requests', (req, res) => {
     res.render('student/request.ejs', {

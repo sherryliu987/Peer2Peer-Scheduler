@@ -239,7 +239,9 @@ async function getSessions(type, googleId) {
                     peerLeaderConfirm: doc.peerLeaderConfirm,
                     dateTime: doc.dateTime,
                     subject: doc.subject,
-                    length: doc.length
+                    length: doc.length,
+                    studentToMentorRating: doc.hasOwnProperty('studentToMentorRating') ? doc.studentToMentorRating : -1,
+                    studentToSessionRating: doc.hasOwnProperty('studentToSessionRating') ? doc.studentToSessionRating : -1,
                 }
                 if (type == 'mentor' && !doc.mentorConfirm) {
                     if (!doc.cancelled && !doc.done) sessions.upcoming.push(data);
@@ -348,11 +350,48 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
+async function rateSession(googleId, type, sessionId, ratings) {
+    try {
+        const sessionCollection = globalDB.collection('sessions');
+        let objectId;
+        try {
+            objectId = new ObjectId(sessionId);
+        } catch (err) {
+            return 'Session not found.'; //An invalid ObjectId was passed in
+        }
+
+        const session = await sessionCollection.findOne({ _id: objectId });
+        if (session == null) return 'Session not found.';
+        if (session.cancelled) return 'Session has been cancelled.';
+        if (!session.done) return 'Session has not be complete. Please wait for the peerleader to mark the session as completed.';
+        if (type == 'student') {
+            if (session.student.id != googleId) //Make sure it is asking this mentor to accept
+                return 'You are not authorized to rate this session as a student.';
+            if (session.hasOwnProperty('studentToSessionRating') || session.hasOwnProperty('studentToMentorRating'))
+                return 'This session has already been rated by the student.';
+            await sessionCollection.updateOne({ _id: objectId }, { $set: ratings } );
+        } else if (type == 'mentor') {
+
+        } else if (type == 'peerLeader' ) {
+
+        } else {
+            console.error('Invalid type when accepting session. Expected "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong. An invalid type was passed in.';
+        }
+
+        return -1; //-1 means no error
+    } catch (err) {
+        console.error('Error rating session.', googleId, type, sessionId, ratings, err);
+        return 'Something went wrong.';
+    }
+}
+
 module.exports = {
     addUser, findUser, updateUser,
     addSession, cancelSession,
     doneSession, acceptSession, rejectSession,
     getSessions,
     getAllMentors, acceptMentor, rejectMentor,
-    getMentors, getPeerLeaders
+    getMentors, getPeerLeaders,
+    rateSession
 };
