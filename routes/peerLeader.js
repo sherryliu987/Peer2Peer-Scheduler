@@ -57,6 +57,20 @@ router.post('/sessions/done/:id', async (req, res) => {
     if (error == -1) res.redirect('/peerleader/sessions');
     else res.send(error);
 });
+router.post('/sessions/rate/:id', async (req, res) => {
+    const possibleRatings = ['1', '2', '3', '4', '5'];
+    if (possibleRatings.includes(req.body.mentorRating)) {
+        const mentorRating = parseInt(req.body.mentorRating);
+        const error = await db.rateSession(req.user.googleId, 'peerLeader', req.params.id, {
+            peerLeaderToMentor: mentorRating
+        });
+        if (error == -1) res.redirect('/peerleader/sessions');
+        else res.send(error);
+    } else {
+        res.send('Please enter a valid rating. Either "1", "2", "3", "4", or "5"');
+    }
+});
+
 
 module.exports = router; //Allows the router object to be accessed through require()
 

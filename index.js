@@ -8,11 +8,11 @@ require('dotenv').config(); //Creates environment variables
 require('./passport-setup'); //Configures passport to authenticate with google and use mongodb
 
 /* TODO List
- * Add ratings (mentor -> session, peerleader -> tutor)
  * Pick mentors based on ratings/last sessions
  * Add emails
  * Add peerleader signup
  * Add footer
+ * Fix header on small screens
  * Add changing account info
  * Cancel Sessions if not mentor/peerleader found
  * Make better redirect after authenticating

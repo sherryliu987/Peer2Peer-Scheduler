@@ -364,7 +364,7 @@ async function rateSession(googleId, type, sessionId, ratings) {
         if (session.cancelled) return 'Session has been cancelled.';
         if (!session.done) return 'Session has not be complete. Please wait for the peerleader to mark the session as completed.';
         if (type == 'student') {
-            if (session.student.id != googleId) //Make sure it is asking this mentor to accept
+            if (session.student.id != googleId) //Make sure it is the student who requested the session
                 return 'You are not authorized to rate this session as a student.';
             if (session.ratings.hasOwnProperty('studentToSession') ||
                 session.ratings.hasOwnProperty('studentToMentor'))
@@ -375,7 +375,7 @@ async function rateSession(googleId, type, sessionId, ratings) {
                     'ratings.studentToSession': ratings.studentToSession
                 }});
         } else if (type == 'mentor') {
-            if (!session.mentorConfirm || session.mentors[0].id != googleId) //Make sure it is asking this mentor to accept
+            if (!session.mentorConfirm || session.mentors[0].id != googleId) //Make sure it is the mentor who tutored the session
                 return 'You are not authorized to rate this session as a mentor.';
             if (session.ratings.hasOwnProperty('mentorToSession'))
                 return 'This session has already been rated by the mentor.';
@@ -384,9 +384,16 @@ async function rateSession(googleId, type, sessionId, ratings) {
                     'ratings.mentorToSession': ratings.mentorToSession
                 }});
         } else if (type == 'peerLeader' ) {
-
+            if (!session.peerLeaderConfirm || session.peerLeaders[0].id != googleId) //Make sure it is the peerleader who oversaw the session
+                return 'You are not authorized to rate this session as a peerLeader.';
+            if (session.ratings.hasOwnProperty('peerLeaderToMentor'))
+                return 'This session has already been rated by the peerLeader.';
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.peerLeaderToMentor': ratings.peerLeaderToMentor
+                }});
         } else {
-            console.error('Invalid type when accepting session. Expected "mentor" or "peerLeader", but got ' + type);
+            console.error('Invalid type when accepting session. Expected "student", "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong. An invalid type was passed in.';
         }
 
