@@ -10,5 +10,5 @@
  - [ ] Fix header on small screens
  - [ ] Add changing account info
  - [ ] Cancel Sessions if not mentor/peerleader found
- - [ ] Make better redirect after authenticating
+ - [x] Make better redirect after authenticating
  - [ ] Move the list of subjects to one place

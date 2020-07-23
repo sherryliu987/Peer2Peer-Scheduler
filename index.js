@@ -40,7 +40,16 @@ app.get('/failed', (req, res) => res.send('You failed to log in!'));
 app.get('/auth', passport.authenticate('google', { scope: ['profile', 'email'] })); //Brings up the google sign in page
 app.get('/auth/callback', //Once a student signs in with google
     passport.authenticate('google', { failureRedirect: '/failed' }),
-    (req, res) => res.redirect('/signup'), //If successful sign in, redirect to /signup
+    (req, res) => {
+        if (req.user.isPeerLeader)
+            res.redirect('/peerleader');
+        else if (req.user.isMentor)
+            res.redirect('/mentor');
+        else if (req.user.isStudent)
+            res.redirect('/student');
+        else
+            res.redirect('/signup');
+    }
 );
 app.get('/logout', (req, res) => { //When a user accesses /logout, sign them out and redirect back to the home page
     req.logout();
