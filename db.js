@@ -286,6 +286,7 @@ async function getAllMentors() {
                     state: doc.state,
                     availability: doc.availability,
                     subjects: doc.subjects,
+                    rating: doc.hasOwnProperty('rating') ? doc.rating : 'Not yet rated.',
                     id: doc._id //Note: This uses the ObjectId, NOT the googleId!
                 }
                 if (doc.isMentor) mentors.isMentor.push(data);
@@ -349,6 +350,36 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
+//For a mentor, looks at all of the tutored session, and averages all of the ratings recieved, and stores that in the db
+async function updateMentorRating(googleId) {
+    try {
+        const userCollection = globalDB.collection('users');
+        const sessionCollection = globalDB.collection('sessions');
+        const cursor = sessionCollection.find({ 'mentors.0.id': googleId, 'mentorConfirm': true, 'done': true });
+        let rating = 0;
+        let amt = 0;
+        await cursor.forEach((doc, err) => {
+            if (err) {
+                console.error('Error when updating mentor rating.', err);
+            } else {
+                if (doc.ratings.hasOwnProperty('studentToMentor')) {
+                    rating += doc.ratings.studentToMentor;
+                    amt++;
+                }
+                if (doc.ratings.hasOwnProperty('peerLeaderToMentor')) {
+                    rating += doc.ratings.peerLeaderToMentor;
+                    amt++;
+                }
+            }
+        });
+        rating /= amt;
+        userCollection.updateOne({ googleId }, { $set: { 'rating': rating } });
+    } catch (err) {
+        console.error('Something went wrong when updating a mentor rating.');
+    }
+}
+
+//Adds fields to the ratings object of a session, depending on who is rating what
 async function rateSession(googleId, type, sessionId, ratings) {
     try {
         const sessionCollection = globalDB.collection('sessions');
@@ -374,6 +405,9 @@ async function rateSession(googleId, type, sessionId, ratings) {
                     'ratings.studentToMentor': ratings.studentToMentor,
                     'ratings.studentToSession': ratings.studentToSession
                 }});
+            //Each time a mentor is rated, update their rating
+            if (session.mentors.length > 0 && session.mentorConfirm)
+                updateMentorRating(session.mentors[0].id);
         } else if (type == 'mentor') {
             if (!session.mentorConfirm || session.mentors[0].id != googleId) //Make sure it is the mentor who tutored the session
                 return 'You are not authorized to rate this session as a mentor.';
@@ -392,6 +426,9 @@ async function rateSession(googleId, type, sessionId, ratings) {
                 $set: {
                     'ratings.peerLeaderToMentor': ratings.peerLeaderToMentor
                 }});
+            //Each time a mentor is rated, update their rating
+            if (session.mentors.length > 0 && session.mentorConfirm)
+                updateMentorRating(session.mentors[0].id);
         } else {
             console.error('Invalid type when accepting session. Expected "student", "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong. An invalid type was passed in.';

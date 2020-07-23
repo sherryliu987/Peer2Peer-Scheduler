@@ -136,7 +136,8 @@ router.post('/mentor', [
             school: req.body.school,
             phone: req.body.phone,
             subjects: chosenSubjects,
-            availability: chosenTimes
+            availability: chosenTimes,
+            rating: 4 //Default rating of 4
         });
         res.redirect('/signup/applied');
     }
