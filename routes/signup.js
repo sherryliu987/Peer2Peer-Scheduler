@@ -137,7 +137,8 @@ router.post('/mentor', [
             phone: req.body.phone,
             subjects: chosenSubjects,
             availability: chosenTimes,
-            rating: 4 //Default rating of 4
+            rating: 4, //Default rating of 4
+            lastSession: Date.now() //Default last session of when they registered
         });
         res.redirect('/signup/applied');
     }

@@ -125,6 +125,12 @@ async function doneSession(sessionId, peerLeaderId) {
         if (!session.peerLeaderConfirm || session.peerLeaders[0].id != peerLeaderId)
             return 'That user does not have permission to complete this session.';
         await sessionCollection.updateOne({ _id: objectId }, { $set: { done: true }});
+        if (session.mentorConfirm) {
+            const userCollection = globalDB.collection('users');
+            const mentor = await userCollection.findOne({ 'googleId': session.mentors[0].id });
+            if (mentor.lastSession < session.dateTime)
+                userCollection.updateOne({ 'googleId': session.mentors[0].id }, { $set: { 'lastSession': session.dateTime }});
+        }
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error marking session as done.', err);
