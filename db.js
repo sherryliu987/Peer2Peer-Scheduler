@@ -306,6 +306,13 @@ async function getAllMentors() {
     }
 }
 
+//Gets a numerical score based on how likely a mentor should tutor a session
+const score = (rating, lastSession) => {
+    const daysPassed = (Date.now() - lastSession) / (1000*60*60*24);
+    //The longer the days passed, and the higher the rating, the more likely
+    return rating + (daysPassed * 2.5);
+}
+
 //Get a list of mentors that are able to mentor a certain session
 async function getMentors(dateTime, subject, studentId) {
     try {
@@ -322,9 +329,15 @@ async function getMentors(dateTime, subject, studentId) {
             if (err) {
                 console.error('Error when iterating over mentors.', err);
             } else if (doc.googleId != studentId) { //Make sure a mentor does not mentor themself
-                mentors.push({ id: doc.googleId, name: `${doc.firstName} ${doc.lastName}` });
+                mentors.push({
+                    id: doc.googleId,
+                    name: `${doc.firstName} ${doc.lastName}`,
+                    rating: doc.rating,
+                    lastSession: doc.lastSession
+                });
             }
         });
+        mentors.sort((a, b) => score(b.rating, b.lastSession) - score(a.rating, a.lastSession));
         return mentors.slice(0, 3);
     } catch (err) {
         console.error('Error getting mentors.', err);
