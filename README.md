@@ -3,12 +3,12 @@
 
 ### TODO List
  - [x] Add ratings
- - [ ] Pick mentors based on ratings/last sessions
+ - [x] Pick mentors based on ratings/last sessions
+ - [x] Make better redirect after authenticating
  - [ ] Add emails
+ - [ ] Add changing account info
+ - [ ] Cancel Sessions if not mentor/peerleader found
  - [ ] Add peerleader signup
  - [ ] Add footer
  - [ ] Fix header on small screens
- - [ ] Add changing account info
- - [ ] Cancel Sessions if not mentor/peerleader found
- - [x] Make better redirect after authenticating
  - [ ] Move the list of subjects to one place
