@@ -93,11 +93,11 @@
                 } %>
 
                 <% for (const heading in allSubjects) { %>
-                    <h3><%= heading %></h3> 
+                    <h3><%= heading %></h3>
                     <% for (const subject of allSubjects[heading]) { %>
-                        <input name='<%=subject%>' id='<%=subject%>' type='checkbox' 
+                        <input name='<%=subject%>' id='<%=subject%>' type='checkbox'
                         <% if (values[subject]) { %>
-                            <%= 'checked' %> 
+                            <%= 'checked' %>
                         <% } %>>
                         <label for='<%=subject%>'> <%= subject %> </label>
                         <br>
@@ -115,13 +115,13 @@
                 <% for (const day of days) { %>
                     <h3><%= day %></h3>
                     <% for (const time of times) { %>
-                        <% const dayTime = day + ' ' + time; %> 
-                        <input name='<%= dayTime %>' id='<%= dayTime %>' type='checkbox' 
+                        <% const dayTime = day + ' ' + time; %>
+                        <input name='<%= dayTime %>' id='<%= dayTime %>' type='checkbox'
                             <%= values[dayTime] ? 'checked' : '' %>>
                         <label for='<%= dayTime %>'> <%= time %> </label>
                         <br>
                     <% } %>
-                <% } %> 
+                <% } %>
 
                 <br>
                 <br>

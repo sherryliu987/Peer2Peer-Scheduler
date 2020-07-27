@@ -33,10 +33,10 @@
     <% } %>
 
     <% if (sessions.upcoming.length > 0) { %>
-        <h2>Upcoming Sessions</h2> 
+        <h2>Upcoming Sessions</h2>
         <% for (const session of sessions.upcoming) { %>
             <div class="session">
-                <% showSessionDetails(session); %> 
+                <% showSessionDetails(session); %>
                 <form action='/student/cancel/<%=session.id%>' method='POST'>
                     <input type='submit' value='Cancel Session'>
                 </form>
@@ -44,10 +44,10 @@
         <% } %>
     <% } %>
     <% if (sessions.past.length > 0) { %>
-        <h2>Past Sessions</h2> 
+        <h2>Past Sessions</h2>
         <% for (const session of sessions.past) { %>
             <div class="session">
-                <% showSessionDetails(session); %> 
+                <% showSessionDetails(session); %>
                 <% if (!session.ratings.hasOwnProperty('studentToMentor') &&
                         !session.ratings.hasOwnProperty('studnetToSession')) { %>
                 <form action='/student/rate/<%=session.id%>' method='POST'>
@@ -78,10 +78,10 @@
         <% } %>
     <% } %>
     <% if (sessions.cancelled.length > 0) { %>
-        <h2>Cancelled Sessions</h2> 
+        <h2>Cancelled Sessions</h2>
         <% for (const session of sessions.cancelled) { %>
             <div class="session">
-                <% showSessionDetails(session); %> 
+                <% showSessionDetails(session); %>
             </div>
         <% } %>
     <% } %>

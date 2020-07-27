@@ -12,13 +12,13 @@
         <%- include('../header'); -%>
 
         <h1>Sign up</h1>
-        <% if (!isStudent) { %> 
+        <% if (!isStudent) { %>
             <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
         <% } else {  %>
             <button onclick="window.location.href='/student'">Go to Student Home</button>
         <% } %>
 
-        <% if (!isMentor && !appliedMentor) { %> 
+        <% if (!isMentor && !appliedMentor) { %>
             <button onclick="window.location.href='/signup/mentor'">Apply for Mentor</button>
         <% } else if (isMentor) { %>
             <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>

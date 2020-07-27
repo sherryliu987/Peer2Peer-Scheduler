@@ -63,7 +63,6 @@ router.post('/requests', [
         });
         return;
     }
-    
     const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
     const peerLeaders = await db.getPeerLeaders(dateMS);
     await db.addSession({
