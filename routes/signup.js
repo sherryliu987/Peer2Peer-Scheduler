@@ -16,16 +16,12 @@ router.get('/', (req, res) => { //When someone accesses /signup
 
 router.get('/student', (req, res) => { //When someone accesses /signup/student
     if (!req.user || req.user.isStudent) {//If they aren't signed in or are already a student
-        res.redirect('/'); 
+        res.redirect('/');
     } else {
         res.render('signup/student.ejs', {
             signedIn: (req.user != null),
             ...req.user,
-            values: {
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                email: req.user.email
-            },
+            values: { ...req.user },
             errors: []
         });
     }
@@ -68,16 +64,12 @@ router.post('/student', [
 
 router.get('/mentor', (req, res) => { //When someone accesses /signup/mentor
     if (!req.user || req.user.appliedMentor) {//If they aren't signed in or are already a mentor
-        res.redirect('/'); 
+        res.redirect('/');
     } else {
         res.render('signup/mentor.ejs', {
             signedIn: (req.user != null),
             ...req.user,
-            values: {
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                email: req.user.email,
-            },
+            values: { ...req.user },
             errors: []
         });
     }
@@ -94,7 +86,7 @@ router.post('/mentor', [
     if (!req.user || req.user.appliedMentor) {
         res.status(401);
     } else {
-        const subjects = 
+        const subjects =
             ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
                 'K-5 Math', '6-8 Math', 'Math 1', 'Math 2', 'Math 3', 'Pre-Calculus', 'Calculus', 'Statistics',
                 'K-5 Social Studies', '6-8 Social Studies', 'World History', 'American History', 'K-5 English', '6-8 English', '9-12 English',

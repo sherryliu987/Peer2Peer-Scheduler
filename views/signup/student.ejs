@@ -41,10 +41,11 @@
             <br>
 
             <label for='grade'>Grade</label>
-            <select name='grade' value='1'>
+            <select name='grade'>
             <option value='K'>K</option>
             <% for (let i = 1; i <= 12; i++) { %>
-                <option value='<%= i %>'><%= i %></option>
+                <option value='<%= i %>' <%= values.grade == i ? 'selected' : '' %>
+                    ><%= i %></option>
             <% } %>
             </select>
             <% if (errors.includes('grade')) { %>
