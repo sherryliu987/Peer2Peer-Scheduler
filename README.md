@@ -5,8 +5,8 @@
  - [x] Add ratings
  - [x] Pick mentors based on ratings/last sessions
  - [x] Make better redirect after authenticating
+ - [x] Add changing account info
  - [ ] Add emails
- - [ ] Add changing account info
  - [ ] Cancel Sessions if not mentor/peerleader found
  - [ ] Add peerleader signup
  - [ ] Add footer
