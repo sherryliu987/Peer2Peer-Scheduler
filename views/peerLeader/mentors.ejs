@@ -20,34 +20,39 @@
     <button onclick="window.location.href='/'">Main</button>
     <button onclick="window.location.href='/logout'">Log out</button>
 
-    <% function showMentor(mentor, showButtons) { %>
-        <div class="mentor">
-            <p>Mentor: <%=mentor.name%><p>
-            <p>Grade: <%=mentor.grade%><p>
-            <p>Email: <%=mentor.email%><p>
-            <p>Phone: <%=mentor.phone%><p>
-            <p>School: <%=mentor.school%><p>
-            <p>State: <%=mentor.state%><p>
-            <p>Availability: <%=mentor.availability%><p>
-            <p>Subjects: <%=mentor.subjects%><p>
-            <% if (showButtons) { %>
+    <% function showMentorDetails(mentor, showButtons) { %>
+        <p>Mentor: <%=mentor.name%><p>
+        <p>Grade: <%=mentor.grade%><p>
+        <p>Email: <%=mentor.email%><p>
+        <p>Phone: <%=mentor.phone%><p>
+        <p>School: <%=mentor.school%><p>
+        <p>State: <%=mentor.state%><p>
+        <p>Availability: <%=mentor.availability%><p>
+        <p>Subjects: <%=mentor.subjects%><p>
+    <% } %>
+
+    <% if (mentors.applied.length > 0) { %>
+        <h2>Mentors Applications</h2> 
+        <% for (const mentor of mentors.applied) { %>
+            <div class="mentor">
+                <% showMentorDetails(mentor, true) %> 
                 <form action='/peerleader/mentors/accept/<%=mentor.id%>' method='POST'>
                     <input type='submit' value='Accept Application'>
                 </form>
                 <form action='/peerleader/mentors/reject/<%=mentor.id%>' method='POST'>
                     <input type='submit' value='Reject Application'>
                 </form>
-            <% } %>
-        </div>
-    <% } %>
-
-    <% if (mentors.applied.length > 0) { %>
-        <h2>Mentors Applications</h2> 
-        <% for (const mentor of mentors.applied) showMentor(mentor, true) %> 
+            </div>
+        <% } %>
     <% } %>
     <% if (mentors.isMentor.length > 0) { %>
         <h2>Current Mentors</h2> 
-        <% for (const mentor of mentors.isMentor) showMentor(mentor, false) %> 
+        <% for (const mentor of mentors.isMentor) { %>
+            <div class='mentor'>
+                <% showMentorDetails(mentor, false) %> 
+                <p>Rating: <%=mentor.rating%></p>
+            </div>
+        <% } %>
     <% } %>
     </script>
 

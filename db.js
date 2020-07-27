@@ -125,6 +125,12 @@ async function doneSession(sessionId, peerLeaderId) {
         if (!session.peerLeaderConfirm || session.peerLeaders[0].id != peerLeaderId)
             return 'That user does not have permission to complete this session.';
         await sessionCollection.updateOne({ _id: objectId }, { $set: { done: true }});
+        if (session.mentorConfirm) {
+            const userCollection = globalDB.collection('users');
+            const mentor = await userCollection.findOne({ 'googleId': session.mentors[0].id });
+            if (mentor.lastSession < session.dateTime)
+                userCollection.updateOne({ 'googleId': session.mentors[0].id }, { $set: { 'lastSession': session.dateTime }});
+        }
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error marking session as done.', err);
@@ -239,7 +245,8 @@ async function getSessions(type, googleId) {
                     peerLeaderConfirm: doc.peerLeaderConfirm,
                     dateTime: doc.dateTime,
                     subject: doc.subject,
-                    length: doc.length
+                    length: doc.length,
+                    ratings: doc.ratings
                 }
                 if (type == 'mentor' && !doc.mentorConfirm) {
                     if (!doc.cancelled && !doc.done) sessions.upcoming.push(data);
@@ -285,6 +292,7 @@ async function getAllMentors() {
                     state: doc.state,
                     availability: doc.availability,
                     subjects: doc.subjects,
+                    rating: doc.hasOwnProperty('rating') ? doc.rating : 'Not yet rated.',
                     id: doc._id //Note: This uses the ObjectId, NOT the googleId!
                 }
                 if (doc.isMentor) mentors.isMentor.push(data);
@@ -296,6 +304,13 @@ async function getAllMentors() {
     } catch (err) {
         console.error('Error getting all mentors.', err);
     }
+}
+
+//Gets a numerical score based on how likely a mentor should tutor a session
+const score = (rating, lastSession) => {
+    const daysPassed = (Date.now() - lastSession) / (1000*60*60*24);
+    //The longer the days passed, and the higher the rating, the more likely
+    return rating + (daysPassed * 2.5);
 }
 
 //Get a list of mentors that are able to mentor a certain session
@@ -314,9 +329,15 @@ async function getMentors(dateTime, subject, studentId) {
             if (err) {
                 console.error('Error when iterating over mentors.', err);
             } else if (doc.googleId != studentId) { //Make sure a mentor does not mentor themself
-                mentors.push({ id: doc.googleId, name: `${doc.firstName} ${doc.lastName}` });
+                mentors.push({
+                    id: doc.googleId,
+                    name: `${doc.firstName} ${doc.lastName}`,
+                    rating: doc.rating,
+                    lastSession: doc.lastSession
+                });
             }
         });
+        mentors.sort((a, b) => score(b.rating, b.lastSession) - score(a.rating, a.lastSession));
         return mentors.slice(0, 3);
     } catch (err) {
         console.error('Error getting mentors.', err);
@@ -348,11 +369,103 @@ async function getPeerLeaders(dateTime) {
     }
 }
 
+//For a mentor, looks at all of the tutored session, and averages all of the ratings recieved, and stores that in the db
+async function updateMentorRating(googleId) {
+    try {
+        const userCollection = globalDB.collection('users');
+        const sessionCollection = globalDB.collection('sessions');
+        const cursor = sessionCollection.find({ 'mentors.0.id': googleId, 'mentorConfirm': true, 'done': true });
+        let rating = 0;
+        let amt = 0;
+        await cursor.forEach((doc, err) => {
+            if (err) {
+                console.error('Error when updating mentor rating.', err);
+            } else {
+                if (doc.ratings.hasOwnProperty('studentToMentor')) {
+                    rating += doc.ratings.studentToMentor;
+                    amt++;
+                }
+                if (doc.ratings.hasOwnProperty('peerLeaderToMentor')) {
+                    rating += doc.ratings.peerLeaderToMentor;
+                    amt++;
+                }
+            }
+        });
+        rating /= amt;
+        userCollection.updateOne({ googleId }, { $set: { 'rating': rating } });
+    } catch (err) {
+        console.error('Something went wrong when updating a mentor rating.');
+    }
+}
+
+//Adds fields to the ratings object of a session, depending on who is rating what
+async function rateSession(googleId, type, sessionId, ratings) {
+    try {
+        const sessionCollection = globalDB.collection('sessions');
+        let objectId;
+        try {
+            objectId = new ObjectId(sessionId);
+        } catch (err) {
+            return 'Session not found.'; //An invalid ObjectId was passed in
+        }
+
+        const session = await sessionCollection.findOne({ _id: objectId });
+        if (session == null) return 'Session not found.';
+        if (session.cancelled) return 'Session has been cancelled.';
+        if (!session.done) return 'Session has not be complete. Please wait for the peerleader to mark the session as completed.';
+        if (type == 'student') {
+            if (session.student.id != googleId) //Make sure it is the student who requested the session
+                return 'You are not authorized to rate this session as a student.';
+            if (session.ratings.hasOwnProperty('studentToSession') ||
+                session.ratings.hasOwnProperty('studentToMentor'))
+                return 'This session has already been rated by the student.';
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.studentToMentor': ratings.studentToMentor,
+                    'ratings.studentToSession': ratings.studentToSession
+                }});
+            //Each time a mentor is rated, update their rating
+            if (session.mentors.length > 0 && session.mentorConfirm)
+                updateMentorRating(session.mentors[0].id);
+        } else if (type == 'mentor') {
+            if (!session.mentorConfirm || session.mentors[0].id != googleId) //Make sure it is the mentor who tutored the session
+                return 'You are not authorized to rate this session as a mentor.';
+            if (session.ratings.hasOwnProperty('mentorToSession'))
+                return 'This session has already been rated by the mentor.';
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.mentorToSession': ratings.mentorToSession
+                }});
+        } else if (type == 'peerLeader' ) {
+            if (!session.peerLeaderConfirm || session.peerLeaders[0].id != googleId) //Make sure it is the peerleader who oversaw the session
+                return 'You are not authorized to rate this session as a peerLeader.';
+            if (session.ratings.hasOwnProperty('peerLeaderToMentor'))
+                return 'This session has already been rated by the peerLeader.';
+            await sessionCollection.updateOne({ _id: objectId }, {
+                $set: {
+                    'ratings.peerLeaderToMentor': ratings.peerLeaderToMentor
+                }});
+            //Each time a mentor is rated, update their rating
+            if (session.mentors.length > 0 && session.mentorConfirm)
+                updateMentorRating(session.mentors[0].id);
+        } else {
+            console.error('Invalid type when accepting session. Expected "student", "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong. An invalid type was passed in.';
+        }
+
+        return -1; //-1 means no error
+    } catch (err) {
+        console.error('Error rating session.', googleId, type, sessionId, ratings, err);
+        return 'Something went wrong.';
+    }
+}
+
 module.exports = {
     addUser, findUser, updateUser,
     addSession, cancelSession,
     doneSession, acceptSession, rejectSession,
     getSessions,
     getAllMentors, acceptMentor, rejectMentor,
-    getMentors, getPeerLeaders
+    getMentors, getPeerLeaders,
+    rateSession
 };

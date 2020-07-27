@@ -22,14 +22,19 @@
     <button onclick="window.location.href='/'">Main</button>
     <button onclick="window.location.href='/logout'">Log out</button>
 
-    <% function showSession(session, showButtons) { %>
-        <div class="session">
-            <p>Student: <%=session.student.name%>, in grade <%=session.student.grade%></p>
-            <p>PeerLeader: <%=session.peerLeader%></p>
-            <p>Subject: <%=session.subject%></p>
-            <p class='datetime'><%=session.dateTime%></p>
-            <p>Length: <%=session.length%> minutes</p>
-            <% if (showButtons) { %>
+    <% function showSessionDetails(session) { %>
+        <p>Student: <%=session.student.name%>, in grade <%=session.student.grade%></p>
+        <p>PeerLeader: <%=session.peerLeader%></p>
+        <p>Subject: <%=session.subject%></p>
+        <p class='datetime'><%=session.dateTime%></p>
+        <p>Length: <%=session.length%> minutes</p>
+    <% } %>
+
+    <% if (sessions.upcoming.length > 0) { %>
+        <h2>Upcoming Sessions</h2> 
+        <% for (const session of sessions.upcoming) { %>
+            <div class="session">
+                <% showSessionDetails(session) %> 
                 <% if (session.mentorConfirm) { %>
                     <p>Session Confirmed!</p>
                 <% } else { %>
@@ -40,21 +45,40 @@
                         <input type='submit' value='Reject Session'>
                     </form>
                 <% } %>
-            <% } %>
-        </div>
-    <% } %>
-
-    <% if (sessions.upcoming.length > 0) { %>
-        <h2>Upcoming Sessions</h2> 
-        <% for (const session of sessions.upcoming) showSession(session, true) %> 
+            </div>
+        <% } %>
     <% } %>
     <% if (sessions.past.length > 0) { %>
         <h2>Past Sessions</h2> 
-        <% for (const session of sessions.past) showSession(session, false) %> 
+        <% for (const session of sessions.past) { %>
+            <div class="session">
+                <% showSessionDetails(session) %> 
+                <% if (!session.ratings.hasOwnProperty('mentorToSession')) { %>
+                    <form action='/mentor/rate/<%=session.id%>' method='POST'>
+                        <label for='sessionRating'>Overall Session rating: </label>
+                        <select id='sessionRating' name='sessionRating'>
+                            <option id='1'>1</option>
+                            <option id='2'>2</option>
+                            <option id='3'>3</option>
+                            <option id='4'>4</option>
+                            <option id='5' selected>5</option>
+                        </select>
+                        <input type='submit' value='Rate session'>
+                    </form>
+                <% } else { %>
+                    <p>Overall Session Rating: <%=session.ratings.mentorToSession%></p>
+                <% } %>
+            </div>
+        <% } %>
     <% } %>
     <% if (sessions.cancelled.length > 0) { %>
         <h2>Cancelled Sessions</h2> 
-        <% for (const session of sessions.cancelled) showSession(session, false) %> 
+        <% for (const session of sessions.cancelled) { %>
+            <div class="session">
+                <% showSessionDetails(session) %> 
+
+            </div>
+        <% } %>
     <% } %>
     <script>
     const datetimes = document.getElementsByClassName('datetime');
