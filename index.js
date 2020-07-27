@@ -12,6 +12,9 @@ const mentorRouter = require('./routes/mentor.js');
 const peerLeaderRouter = require('./routes/peerLeader.js');
 const signupRouter = require('./routes/signup.js');
 
+const db = require('./db.js');
+const { check, validationResult } = require('express-validator');
+
 app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
 app.use(express.json());
 app.use(cookieSession({
@@ -51,6 +54,88 @@ app.get('/auth/callback', //Once a student signs in with google
             res.redirect('/signup');
     }
 );
+app.get('/account', (req, res) => {
+    if (!req.user) res.redirect('/');
+    else {
+        let values = { ...req.user };
+        if (req.user.isMentor || req.user.isPeerLeader)
+            for (const avail of req.user.availability) values[avail] = true;
+        if (req.user.isMentor)
+            for (const subject of req.user.subjects) values[subject] = true;
+        res.render('account', {
+            signedIn: (req.user != null),
+            ...req.user,
+            values,
+            errors: []
+        });
+    }
+});
+app.post('/account', [
+    check('firstName').trim().notEmpty().escape(),
+    check('lastName').trim().notEmpty().escape(),
+    check('email').isEmail().normalizeEmail().escape(),
+    check('school').trim().notEmpty().escape(),
+    check('phone').isMobilePhone().escape(),
+    check('state').isLength(2).escape()
+], async (req, res) => {
+    if (!req.user) res.send('You are not signed in.');
+    else {
+        let errors = validationResult(req).array().map(e => e.param);
+
+        let chosenSubjects = [];
+        let chosenTimes = [];
+        if (req.user.isMentor || req.user.isPeerLeader) {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const times = ['Morning', 'Afternoon', 'Evening'];
+            for (const day of days) {
+                for (const time of times) {
+                    if (req.body[day + ' ' + time] == 'on') chosenTimes.push(day + ' ' + time);
+                }
+            }
+            if (chosenTimes.length == 0) errors.push('times');
+        }
+        if (req.user.isMentor) {
+            const subjects =
+                ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
+                    'K-5 Math', '6-8 Math', 'Math 1', 'Math 2', 'Math 3', 'Pre-Calculus', 'Calculus', 'Statistics',
+                    'K-5 Social Studies', '6-8 Social Studies', 'World History', 'American History', 'K-5 English', '6-8 English', '9-12 English',
+                    'Computer Science', 'Economics', 'Chinese', 'Spanish', 'French', 'German', 'Latin', 'Music', 'Music theory'];
+            for (const subject of subjects) {
+                if (req.body[subject] == 'on') chosenSubjects.push(subject);
+            }
+            if (chosenSubjects.length == 0) errors.push('subjects');
+        }
+
+        if (errors.length > 0) {
+            res.render('account', {
+                signedIn: (req.user != null),
+                ...req.user,
+                values: req.body,
+                errors
+            });
+            return;
+        }
+        let data = {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email
+        };
+        if (req.user.isStudent || req.user.isMentor || req.user.isPeerLeader) {
+            data.grade = req.body.grade;
+            data.state = req.body.state;
+            data.school = req.body.school;
+            data.phone = req.body.phone;
+        }
+        if (req.user.isMentor || req.user.isPeerLeader) {
+            data.availability = chosenTimes;
+        }
+        if (req.user.isMentor) {
+            data.subjects = chosenSubjects;
+        }
+        await db.updateUser(req.user.googleId, data);
+        res.redirect('/');
+    }
+});
 app.get('/logout', (req, res) => { //When a user accesses /logout, sign them out and redirect back to the home page
     req.logout();
     res.redirect('/');
