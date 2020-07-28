@@ -14,6 +14,7 @@ const signupRouter = require('./routes/signup.js');
 
 const db = require('./db.js');
 const { check, validationResult } = require('express-validator');
+const allSubjects = require('./subjects.json');
 
 app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
 app.use(express.json());
@@ -65,6 +66,7 @@ app.get('/account', (req, res) => {
         res.render('account', {
             signedIn: (req.user != null),
             ...req.user,
+            allSubjects,
             values,
             errors: []
         });
@@ -95,11 +97,8 @@ app.post('/account', [
             if (chosenTimes.length == 0) errors.push('times');
         }
         if (req.user.isMentor) {
-            const subjects =
-                ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
-                    'K-5 Math', '6-8 Math', 'Math 1', 'Math 2', 'Math 3', 'Pre-Calculus', 'Calculus', 'Statistics',
-                    'K-5 Social Studies', '6-8 Social Studies', 'World History', 'American History', 'K-5 English', '6-8 English', '9-12 English',
-                    'Computer Science', 'Economics', 'Chinese', 'Spanish', 'French', 'German', 'Latin', 'Music', 'Music theory'];
+            const subjects = [];
+            for (const heading in allSubjects) subjects.push(...allSubjects[heading]);
             for (const subject of subjects) {
                 if (req.body[subject] == 'on') chosenSubjects.push(subject);
             }
@@ -110,6 +109,7 @@ app.post('/account', [
             res.render('account', {
                 signedIn: (req.user != null),
                 ...req.user,
+                allSubjects,
                 values: req.body,
                 errors
             });

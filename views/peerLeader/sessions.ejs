@@ -31,10 +31,10 @@
     <% } %>
 
     <% if (sessions.upcoming.length > 0) { %>
-        <h2>Upcoming Sessions</h2> 
+        <h2>Upcoming Sessions</h2>
         <% for (const session of sessions.upcoming) { %>
             <div class='session'>
-                <% showSessionDetails(session) %> 
+                <% showSessionDetails(session) %>
                 <% if (session.peerLeaderConfirm) { %>
                     <p>Session Confirmed!</p>
                     <form action='/peerleader/sessions/done/<%=session.id%>' method='POST'>
@@ -52,10 +52,10 @@
         <% } %>
     <% } %>
     <% if (sessions.past.length > 0) { %>
-        <h2>Past Sessions</h2> 
+        <h2>Past Sessions</h2>
         <% for (const session of sessions.past) { %>
             <div class='session'>
-                <% showSessionDetails(session) %> 
+                <% showSessionDetails(session) %>
                 <% if (!session.ratings.hasOwnProperty('peerLeaderToMentor')) { %>
                     <form action='/peerleader/sessions/rate/<%=session.id%>' method='POST'>
                         <label for='mentorRating'>Mentor rating: </label>
@@ -75,10 +75,10 @@
         <% } %>
     <% } %>
     <% if (sessions.cancelled.length > 0) { %>
-        <h2>Cancelled Sessions</h2> 
+        <h2>Cancelled Sessions</h2>
         <% for (const session of sessions.cancelled) { %>
             <div class='session'>
-                <% showSessionDetails(session) %> 
+                <% showSessionDetails(session) %>
             </div>
         <% } %>
     <% } %>

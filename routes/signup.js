@@ -1,6 +1,7 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const db = require('../db.js');
+const allSubjects = require('../subjects.json');
 const router = express.Router();
 
 router.get('/', (req, res) => { //When someone accesses /signup
@@ -69,6 +70,7 @@ router.get('/mentor', (req, res) => { //When someone accesses /signup/mentor
         res.render('signup/mentor.ejs', {
             signedIn: (req.user != null),
             ...req.user,
+            allSubjects,
             values: { ...req.user },
             errors: []
         });
@@ -86,11 +88,8 @@ router.post('/mentor', [
     if (!req.user || req.user.appliedMentor) {
         res.status(401);
     } else {
-        const subjects =
-            ['K-5 Science', '6-8 Science', 'Earth + Environmental Science', 'Biology', 'Chemistry', 'Physics',
-                'K-5 Math', '6-8 Math', 'Math 1', 'Math 2', 'Math 3', 'Pre-Calculus', 'Calculus', 'Statistics',
-                'K-5 Social Studies', '6-8 Social Studies', 'World History', 'American History', 'K-5 English', '6-8 English', '9-12 English',
-                'Computer Science', 'Economics', 'Chinese', 'Spanish', 'French', 'German', 'Latin', 'Music', 'Music theory'];
+        const subjects = [];
+        for (const heading in allSubjects) subjects.push(...allSubjects[heading]);
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const times = ['Morning', 'Afternoon', 'Evening'];
         let chosenSubjects = [];
@@ -113,6 +112,7 @@ router.post('/mentor', [
             res.render('signup/mentor.ejs', {
                 signedIn: (req.user != null),
                 ...req.user,
+                allSubjects,
                 values: req.body,
                 errors: errorsArr
             });

@@ -21,13 +21,13 @@
             <% if (!signedIn) { %>
                 <button onclick="window.location.href='/auth'">Sign up with Google</button>
             <% } else { %>
-                <% if (!isStudent) { %> 
+                <% if (!isStudent) { %>
                     <button onclick="window.location.href='/signup/student'">Sign up as Student</button>
                 <% } else {  %>
                     <button onclick="window.location.href='/student'">Go to Student Home</button>
                 <% } %>
 
-                <% if (!isMentor && !appliedMentor) { %> 
+                <% if (!isMentor && !appliedMentor) { %>
                     <button onclick="window.location.href='/signup/mentor'">Apply for Mentor</button>
                 <% } else if (isMentor) { %>
                     <button onclick="window.location.href='/mentor'">Go to Mentor Home</button>
