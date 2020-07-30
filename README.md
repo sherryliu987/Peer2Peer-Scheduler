@@ -6,9 +6,11 @@
  - [x] Pick mentors based on ratings/last sessions
  - [x] Make better redirect after authenticating
  - [x] Add changing account info
+ - [x] Move the list of subjects to one place
+ - [x] Add peerleader signup
+ - [ ] Add way to accept/reject peerleader application
  - [ ] Add emails
  - [ ] Cancel Sessions if not mentor/peerleader found
- - [ ] Add peerleader signup
+ - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
  - [ ] Add footer
  - [ ] Fix header on small screens
- - [ ] Move the list of subjects to one place
