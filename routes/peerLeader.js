@@ -34,13 +34,12 @@ router.post('/mentors/accept/:id/:email', async (req, res) => {
 
     //automated email notifying mentor of acceptance
     const acceptanceEmail = {
-        from:"peer2peercharlotte@gmail.com",
         to:req.params.email,
         subject:"Welcome to the Peer2Peer team!",
         text:"You have been accepted as a Peer2Peer mentor!"
     }
 
-    await emailer.transporter.sendMail(acceptanceEmail, function (error, info) {
+    emailer.transporter.sendMail(acceptanceEmail, function (error, info) {
         if (error) {
             console.log(error);
         } else {
