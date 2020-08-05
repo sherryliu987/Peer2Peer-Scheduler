@@ -56,7 +56,7 @@ async function cancelSession(sessionId, studentId) {
         if (session.student.id != studentId) //Make sure the student created that request
             return 'You are not authorized to cancel this session.';
 
-        await sessionCollection.updateOne({ _id: objectId, "student.id": studentId }, { $set: { cancelled: true }});
+        await sessionCollection.updateOne({ _id: objectId }, { $set: { cancelled: true }});
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);
@@ -193,14 +193,28 @@ async function rejectSession(sessionId, type, googleId) {
             if (session.mentorConfirm) return 'Session already confirmed.'
             if (session.mentors[0].id != googleId) //Make sure it is asking this mentor to reject
                 return 'You are not authorized to reject this session.';
+            let dbUpdates = {
+                $pop: { mentors: -1 }
+            }
+            if (session.mentors.length == 1) { //No mentor was available, cancel the session.
+                dbUpdates.$set = { cancelled: true };
+                //TODO Email student and peerleader (if they confirmed)
+            }
             //This removes the first element of the mentors list
-            await sessionCollection.updateOne({ _id: objectId }, { $pop: { mentors: -1 } });
+            await sessionCollection.updateOne({ _id: objectId }, dbUpdates);
         } else if (type == 'peerLeader') {
             if (session.peerLeaderConfirm) return 'Session already confirmed.'
             if (session.peerLeaders[0].id != googleId) //Make sure it is asking this mentor to reject
                 return 'You are not authorized to reject this session.';
-            //This removes the first element of the peer leaders list
-            await sessionCollection.updateOne({ _id: objectId }, { $pop: { peerLeaders: -1 } });
+            let dbUpdates = {
+                $pop: { peerLeaders: -1 }
+            }
+            if (session.peerLeaders.length == 1) { //No mentor was available, cancel the session.
+                dbUpdates.$set = { cancelled: true };
+                //TODO Email student and mentor (if they confirmed)
+            }
+            //This removes the first element of the peerLeaders list
+            await sessionCollection.updateOne({ _id: objectId }, dbUpdates);
         } else {
             console.error('Invalid type when rejecting session. Expected "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong. An invalid type was passed in.';
@@ -338,6 +352,12 @@ async function getMentors(dateTime, subject, studentId) {
             }
         });
         mentors.sort((a, b) => score(b.rating, b.lastSession) - score(a.rating, a.lastSession));
+        mentors = mentors.slice(0, 3).map(mentor => {
+            return {
+                id: mentor.id,
+                name: mentor.name
+            }
+        });
         return mentors.slice(0, 3);
     } catch (err) {
         console.error('Error getting mentors.', err);

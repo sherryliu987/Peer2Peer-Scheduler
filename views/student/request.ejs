@@ -18,6 +18,10 @@
         <h1>Request Session</h1>
 
         <form id='requestForm' action='/student/requests' method='post'>
+            <% if (errors.includes('noneFound')) { %>
+                <p class="err">No mentors or Peer Leaders are available for that time/subject. Please choose another date/time.</p>
+                <br>
+            <% } %>
             <label for='datetime'>Please choose a date and time for the session in the format MM/DD/YYYY HH:MM AM/PM</label>
             <p id='timezone'>Please enter the date in the - timezone</p>
             <div style='display: inline'>

@@ -10,7 +10,7 @@
  - [x] Add peerleader signup
  - [ ] Add way to accept/reject peerleader application
  - [ ] Add emails
- - [ ] Cancel Sessions if not mentor/peerleader found
+ - [x] Cancel Sessions if not mentor/peerleader found
  - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
  - [ ] Add footer
  - [ ] Fix header on small screens
