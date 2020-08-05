@@ -65,6 +65,16 @@ router.post('/requests', [
     }
     const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
     const peerLeaders = await db.getPeerLeaders(dateMS);
+    if (mentors.length == 0 || peerLeaders.length == 0) { //If no mentors/peerLeaders are available, ask them to choose a different date/time
+        res.render('student/request.ejs', {
+            signedIn: (req.user != null),
+            ...req.user,
+            values: req.body,
+            errors: ['noneFound']
+        });
+        return;
+    }
+
     await db.addSession({
         student: {
             id: req.user.googleId,

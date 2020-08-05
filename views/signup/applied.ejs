@@ -10,8 +10,14 @@
     <body>
         <%- include('../header'); -%>
 
+        <% if (type == 'mentor') { %>
         <h1>Thank you for applying as a mentor!</h1>
         <p>A peer leader will review your application and you will be sent an email on the results.</p>
+        <% } else if (type == 'peerLeader') { %>
+            <h1>Thank you for applying as a peer leader!</h1>
+            <p>Your application will be reviewed and you will be sent an email on the results.</p>
+        <% } %>
+
         <button onclick="window.location.href='/'">Home</button>
 
     </body>
