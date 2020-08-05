@@ -26,6 +26,10 @@
     "mongodb": "^3.5.8",
     "nodemailer": "^6.4.10",
     "passport": "^0.4.1",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "pejs": "^0.6.5"
+  },
+  "devDependencies": {
+    "filereader": "^0.10.3"
   }
 }

@@ -1,108 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Peer2Peer Peer Leader Application</title>
-<style>
-<%- include('../header.css'); -%>
-.err {
-    font-size: 11pt;
-    display: inline;
-    color: red;
-}
-#content {
-    margin: 5px;
-    padding: 5px;
-}
-</style>
-    </head>
-    <body>
-        <%- include('../header'); -%>
-        <div id='content'>
-            <h1>Sign up</h1>
-            <p>This is a form to apply as a peer leader. Some fields have been autofilled based on your Google Account.</p>
+<head>
+    <meta charset="UTF-8">
+    <title>Peer2Peer Peer Leader Application</title>
+    <style>
+        <%- include('../header-footer.css'); -%>
+        .err {
+            font-size: 11pt;
+            display: inline;
+            color: red;
+        }
+        #content {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
 
-            <form action='/signup/peerLeader' method='post'>
-                <h2>General Information</h2>
-
-                <label for='firstName'>First Name: </label>
-                <input name='firstName' id='firstName' type='text' value='<%= values.firstName %>' required>
-                <% if (errors.includes('firstName')) { %>
-                    <p class='err'>Please specify a first name.</p>
-                <% } %>
-                <br>
-
-                <label for='lastName'>Last Name: </label>
-                <input name='lastName' id='lastName' type='text' value='<%= values.lastName %>' required>
-                <% if (errors.includes('lastName')) { %>
-                    <p class='err'>Please specify a last name.</p>
-                <% } %>
-                <br>
-
-                <label for='email'>Email: </label>
-                <input name='email' id='email' type='email' value='<%= values.email %>' placeholder='example@email.com' required>
-                <% if (errors.includes('email')) { %>
-                    <p class='err'>Please specify a valid email.</p>
-                <% } %>
-                <br>
-
-                <label for='grade'>Grade</label>
-                <select name='grade' id='grade'>
-                <option value='K'>K</option>
-                <% for (let i = 1; i <= 12; i++) { %>
-                    <option value='<%= i %>' <%= values.grade == i ? 'selected' : '' %>>
-                        <%= i %></option>
-                <% } %>
-                </select>
-                <% if (errors.includes('grade')) { %>
-                    <p class='err'>Please specify a valid grade.</p>
-                <% } %>
-                <br>
-
-                <label for='state'>State: </label>
-                <input name='state' id='state' maxlength='2' size='2' type='text' placeholder='AZ' value='<%= values.state || ""%>'required>
-                <% if (errors.includes('state')) { %>
-                    <p class='err'>Please specify the 2 letter abbreviation of your state.</p>
-                <% } %>
-                <br>
-
-                <label for='school'>School: </label>
-                <input name='school' id='school' type='text' value='<%= values.school || "" %>' required>
-                <% if (errors.includes('school')) { %>
-                    <p class='err'>Please specify the name of your school.</p>
-                <% } %>
-                <br>
-
-                <label for='phone'>Phone Number: </label>
-                <input name='phone' id='phone' type='tel' pattern='[0-9]{3}[0-9]{3}[0-9]{4}' placeholder='1234567890' value='<%= values.phone || "" %>' required>
-                <% if (errors.includes('phone')) { %>
-                    <p class='err'>Please specify a phone number in the format 1234567890</p>
-                <% } %>
-                <br>
-
-                <h2>Availability
-                    <% if (errors.includes('times')) { %>
-                        <p class='err'>Please choose at least 1 time when you are available.</p>
-                    <% } %>
-                </h2>
-                <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
-                <% const times = ['Morning', 'Afternoon', 'Evening']; %>
-
-                <% for (const day of days) { %>
-                    <h3><%= day %></h3>
-                    <% for (const time of times) { %>
-                        <% const dayTime = day + ' ' + time; %>
-                        <input name='<%= dayTime %>' id='<%= dayTime %>' type='checkbox'
-                            <%= values[dayTime] ? 'checked' : '' %>>
-                        <label for='<%= dayTime %>'> <%= time %> </label>
-                        <br>
-                    <% } %>
-                <% } %>
-
-                <br>
-                <br>
-                <input type='submit' value='Apply'>
-            </form>
-        </div>
-    </body>
-</html>
+<h1>Peer Leader Application!!</h1>
+<%- include('../footer.ejs'); -%>

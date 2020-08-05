@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Mentor Home</title>
 <style>
-<%- include('../header.css'); -%>
+<%- include('../header-footer.css'); -%>
 .mentor {
     background-color: #E0E0E0;
     padding: 5px;
@@ -32,10 +32,10 @@
     <% } %>
 
     <% if (mentors.applied.length > 0) { %>
-        <h2>Mentors Applications</h2>
+        <h2>Mentors Applications</h2> 
         <% for (const mentor of mentors.applied) { %>
             <div class="mentor">
-                <% showMentorDetails(mentor, true) %>
+                <% showMentorDetails(mentor, true) %> 
                 <form action='/peerleader/mentors/accept/<%=mentor.id%>/<%=mentor.email%>' method='POST'>
                     <input type='submit' value='Accept Application'>
                 </form>
@@ -46,13 +46,16 @@
         <% } %>
     <% } %>
     <% if (mentors.isMentor.length > 0) { %>
-        <h2>Current Mentors</h2>
+        <h2>Current Mentors</h2> 
         <% for (const mentor of mentors.isMentor) { %>
             <div class='mentor'>
-                <% showMentorDetails(mentor, false) %>
+                <% showMentorDetails(mentor, false) %> 
                 <p>Rating: <%=mentor.rating%></p>
             </div>
         <% } %>
     <% } %>
+    </body>
+
   </body>
+  <%- include('../footer.ejs'); -%>
 </html>

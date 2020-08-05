@@ -32,7 +32,7 @@ passport.serializeUser((user, done) => { //This function serializes the user's d
     done(null, user.googleId);
 });
 passport.deserializeUser(async (id, done) => { //This function finds the user's info based on their googleId
-    id = "peerleader";
+    // id = "peerleader";
     const userData = await db.findUser(id); //Find the matching users' data
     done(null, userData);
 });

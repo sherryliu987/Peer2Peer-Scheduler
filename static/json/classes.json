@@ -1,0 +1,9 @@
+[
+
+  {
+    "Science": ["K-5 Science", "6-8 Science", "Earth + Environmental Science", "Biology", "Chemistry", "Physics"],
+    "Math": ["K-5 Math", "6-8 Math", "Math 1", "Math 2", "Math 3", "Pre-Calculus", "Calculus", "Statistics"],
+    "Humanities": ["K-5 Social Studies", "6-8 Social Studies", "World History", "American History", "K-5 English", "6-8 English", "9-12 English"],
+    "Other subjects": ["Computer Science", "Economics", "Chinese", "Spanish", "French", "German", "Latin", "Music", "Music theory"]
+  }
+]
