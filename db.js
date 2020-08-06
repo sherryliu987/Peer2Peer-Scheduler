@@ -1,4 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
+const emailer = require('./emails.js');
 
 //Fetches a user from the db by their googleId
 async function findUser(googleId) {
@@ -79,6 +80,18 @@ async function acceptMentor(userObjectId) {
         if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
         if (user.isMentor) return 'That user is already a mentor.';
         await userCollection.updateOne({ _id: objectId }, { $set: { isMentor: true }});
+
+        //automated email notifying mentor of acceptance
+        const acceptanceEmail = {
+            to:user.email,
+            subject:"Welcome to the Peer2Peer team!",
+            html:"You have been accepted as a Peer2Peer mentor!"
+        }
+        emailer.transporter.sendMail(acceptanceEmail, error => {
+            if (error) {
+                console.error('Error when sending mentor acceptance email.', error);
+            }
+        });
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error accepting mentor.', err);

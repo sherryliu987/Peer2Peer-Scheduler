@@ -36,10 +36,10 @@
         <% for (const mentor of mentors.applied) { %>
             <div class="mentor">
                 <% showMentorDetails(mentor, true) %> 
-                <form action='/peerleader/mentors/accept/<%=mentor.id%>/<%=mentor.email%>' method='POST'>
+                <form action='/peerleader/mentors/accept/<%=mentor.id%>' method='POST'>
                     <input type='submit' value='Accept Application'>
                 </form>
-                <form action='/peerleader/mentors/reject/<%=mentor.id%>/<=%mentor.email%>' method='POST'>
+                <form action='/peerleader/mentors/reject/<%=mentor.id%>' method='POST'>
                     <input type='submit' value='Reject Application'>
                 </form>
             </div>

@@ -2,8 +2,6 @@ const express = require('express');
 const db = require('../db.js');
 const router = express.Router();
 
-const emailer = require('../emails.js');
-
 //Middleware to make sure any peerLeader trying to access the peerLeader pages is logged in
 router.use((req, res, next) => {
     if (req.user && req.user.isPeerLeader) next(); //If logged in, continue
@@ -25,28 +23,8 @@ router.get('/mentors', async (req, res) => { //When a user accesses /peerleader,
         mentors
     });
 });
-router.post('/mentors/accept/:id/:email', async (req, res) => {
-
-    console.log("user id: " + req.params.id);
-    console.log("user email: " + req.params.email);
-
+router.post('/mentors/accept/:id', async (req, res) => {
     const error = await db.acceptMentor(req.params.id);
-
-    //automated email notifying mentor of acceptance
-    const acceptanceEmail = {
-        to:req.params.email,
-        subject:"Welcome to the Peer2Peer team!",
-        text:"You have been accepted as a Peer2Peer mentor!"
-    }
-
-    emailer.transporter.sendMail(acceptanceEmail, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Email sent: " + info.response);
-        }
-    });
-
     if (error === -1) res.redirect('/peerleader/mentors');
     else res.send(error);
 });
