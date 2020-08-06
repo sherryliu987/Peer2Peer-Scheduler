@@ -8,9 +8,11 @@
  - [x] Add changing account info
  - [x] Move the list of subjects to one place
  - [x] Add peerleader signup
+ - [x] Cancel Sessions if not mentor/peerleader found
+ - [x] Add footer
  - [ ] Add way to accept/reject peerleader application
  - [ ] Add emails
- - [x] Cancel Sessions if not mentor/peerleader found
+ - [ ] Add email confirmation
  - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
- - [ ] Add footer
  - [ ] Fix header on small screens
+ - [ ] Add weekly sessions
