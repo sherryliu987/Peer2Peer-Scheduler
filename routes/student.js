@@ -64,7 +64,8 @@ router.post('/requests', [
             signedIn: (req.user != null),
             ...req.user,
             values: req.body,
-            errors
+            errors,
+            subjects
         });
         return;
     }
@@ -75,7 +76,8 @@ router.post('/requests', [
             signedIn: (req.user != null),
             ...req.user,
             values: req.body,
-            errors: ['noneFound']
+            errors: ['noneFound'],
+            subjects
         });
         return;
     }

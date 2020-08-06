@@ -43,9 +43,12 @@
             <br>
             <label for='length'>Length of Session: </label>
             <select name='length'>
-                <option value='30'>30 minutes</option>
-                <option value='45'>45 minutes</option>
-                <option value='60'>1 hour</option>
+                <option value='30' <%= values.length == '30' ? 'selected' : ''%>
+                        >30 minutes</option>
+                <option value='45' <%= values.length == '45' ? 'selected' : ''%>
+                    >45 minutes</option>
+                <option value='60' <%= values.length == '60' ? 'selected' : ''%>
+                    >1 hour</option>
             </select>
             <% if (errors.includes('length')) { %>
                 <p class="err">Please specify a length of 30 minutes, 45 minutes, or 60 minutes</p>
@@ -56,7 +59,8 @@
             <label for='subject'>Subject: </label>
             <select name='subject' required>
                 <% for (const subject of subjects) { %>
-                <option value='<%=subject%>'><%=subject%></option>
+                <option value='<%=subject%>' <%= values.subject == subject ? 'selected' : ''%>
+                    ><%=subject%></option>
                 <% } %>
             </select>
             <% if (errors.includes('subject')) { %>
@@ -93,6 +97,10 @@
                 document.getElementById('datetimeMS').value = new Date(document.getElementById('datetime').value).getTime();
                 document.getElementById('submit').disabled = true;
             }
+
+            setTimeout(() => { //This requires a delay to make sure it overrides JQuery
+                document.getElementById('datetime').value = '<%= values.datetime %>';
+            }, 15);
         </script>
     </body>
     <%- include('../footer.ejs'); -%>
