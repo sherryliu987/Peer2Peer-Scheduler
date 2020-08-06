@@ -3,6 +3,10 @@ const { check, validationResult } = require('express-validator');
 const db = require('../db.js');
 const router = express.Router();
 
+const allSubjects = require('../static/json/classes.json');
+const subjects = [];
+for (const heading in allSubjects) subjects.push(...allSubjects[heading]);
+
 //Middleware to make sure any user trying to access the user pages is logged in
 router.use((req, res, next) => {
     if (req.user && req.user.isStudent) next(); //If logged in, continue
@@ -39,7 +43,8 @@ router.get('/requests', (req, res) => {
         signedIn: (req.user != null),
         ...req.user,
         values: {},
-        errors: []
+        errors: [],
+        subjects
     });
 });
 router.post('/requests', [

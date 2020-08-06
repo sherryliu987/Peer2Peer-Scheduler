@@ -1,7 +1,7 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const db = require('../db.js');
-const allSubjects = require('../subjects.json');
+const allSubjects = require('../static/json/classes.json');
 const router = express.Router();
 
 router.get('/', (req, res) => { //When someone accesses /signup

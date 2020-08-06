@@ -14,7 +14,7 @@ const signupRouter = require('./routes/signup.js');
 
 const db = require('./db.js');
 const { check, validationResult } = require('express-validator');
-const allSubjects = require('./subjects.json');
+const allSubjects = require('./static/json/classes.json');
 
 app.use(express.urlencoded({ extended: false })); //Allows the req body to be easily read
 app.use(express.json());
