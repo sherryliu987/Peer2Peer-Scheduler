@@ -15,22 +15,32 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/mentors', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
-    const mentors = await db.getAllMentors();
-    res.render('peerLeader/mentors.ejs', {
+router.get('/users', async (req, res) => { //When a user accesses /peerleader, display a custom page with ejs
+    const users = await db.getAllUsers();
+    res.render('peerLeader/users.ejs', {
         signedIn: (req.user != null),
         ...req.user,
-        mentors
+        users
     });
 });
-router.post('/mentors/accept/:id', async (req, res) => {
-    const error = await db.acceptMentor(req.params.id);
-    if (error === -1) res.redirect('/peerleader/mentors');
+router.post('/accept/mentor/:id', async (req, res) => {
+    const error = await db.acceptUser(req.params.id, 'mentor');
+    if (error === -1) res.redirect('/peerleader/users?show=mentors');
     else res.send(error);
 });
-router.post('/mentors/reject/:id', async (req, res) => {
-    const error = await db.rejectMentor(req.params.id);
-    if (error == -1) res.redirect('/peerleader/mentors');
+router.post('/accept/peerLeader/:id', async (req, res) => {
+    const error = await db.acceptUser(req.params.id, 'peerLeader');
+    if (error === -1) res.redirect('/peerleader/users?show=peerLeaders');
+    else res.send(error);
+});
+router.post('/reject/mentor/:id', async (req, res) => {
+    const error = await db.rejectUser(req.params.id, 'mentor');
+    if (error === -1) res.redirect('/peerleader/users?show=mentors');
+    else res.send(error);
+});
+router.post('/reject/peerLeader/:id', async (req, res) => {
+    const error = await db.rejectUser(req.params.id, 'peerLeader');
+    if (error === -1) res.redirect('/peerleader/users?show=peerLeaders');
     else res.send(error);
 });
 

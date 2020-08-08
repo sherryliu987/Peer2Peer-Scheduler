@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+<style>
+<%- include('../header-footer.css'); -%>
+.user {
+    background-color: #E0E0E0;
+    padding: 5px;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+</style>
+</head>
+  <body>
+     <%- include('../header'); -%>
+    <h1>Welcome, Peer Leader!</h1>
+    <button onclick="window.location.href='/'">Main</button>
+    <button onclick="show('students')">View Students</button>
+    <button onclick="show('mentors')">View Mentors</button>
+    <button onclick="show('peerLeaders')">View Peer Leaders</button>
+    <button onclick="window.location.href='/logout'">Log out</button>
+
+
+    <% function showBasicUserDetails(user) { %>
+        <p>Name: <%=user.firstName + ' ' + user.lastName%></p>
+        <p>Grade: <%=user.grade%></p>
+        <p>Email: <%=user.email%></p>
+        <p>Phone: <%=user.phone%></p>
+        <p>School: <%=user.school%></p>
+        <p>State: <%=user.state%></p>
+    <% } %>
+
+    <div id='students'>
+        <h2>Current Students</h2>
+        <% for (const student of users.students) { %>
+            <div class='user'>
+                <%= showBasicUserDetails(student) %>
+            </div>
+        <% } %>
+    </div>
+    <div id='peerLeaders' hidden>
+        <% if (users.appliedPeerLeaders.length > 0) { %>
+            <h2>Peer Leader Applications</h2>
+            <% for (const peerLeader of users.appliedPeerLeaders) { %>
+                <div class='user'>
+                    <% showBasicUserDetails(peerLeader) %>
+                    <p>Availability: <%=peerLeader.availability%></p>
+                    <form action='/peerleader/accept/peerLeader/<%=peerLeader._id%>' method='POST'>
+                        <input type='submit' value='Accept Application'>
+                    </form>
+                    <form action='/peerleader/reject/peerLeader/<%=peerLeader._id%>' method='POST'>
+                        <input type='submit' value='Reject Application'>
+                    </form>
+                </div>
+            <% } %>
+        <% } %>
+        <% if (users.peerLeaders.length > 0) { %>
+            <h2>Current Peer Leaders</h2>
+            <% for (const peerLeader of users.peerLeaders) { %>
+                <div class='user'>
+                    <% showBasicUserDetails(peerLeader) %>
+                    <p>Availability: <%=peerLeader.availability%></p>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+
+    <div id='mentors' hidden>
+        <% if (users.appliedMentors.length > 0) { %>
+            <h2>Mentors Applications</h2>
+            <% for (const mentor of users.appliedMentors) { %>
+                <div class='user'>
+                    <% showBasicUserDetails(mentor) %>
+                    <p>Availability: <%=mentor.availability%></p>
+                    <p>Subjects: <%=mentor.subjects%></p>
+                    <form action='/peerleader/accept/mentor/<%=mentor._id%>' method='POST'>
+                        <input type='submit' value='Accept Application'>
+                    </form>
+                    <form action='/peerleader/reject/mentor/<%=mentor._id%>' method='POST'>
+                        <input type='submit' value='Reject Application'>
+                    </form>
+                </div>
+            <% } %>
+        <% } %>
+        <% if (users.mentors.length > 0) { %>
+            <h2>Current Mentors</h2>
+            <% for (const mentor of users.mentors) { %>
+                <div class='user'>
+                    <% showBasicUserDetails(mentor) %>
+                    <p>Availability: <%=mentor.availability%></p>
+                    <p>Subjects: <%=mentor.subjects%></p>
+                    <p>Rating: <%=mentor.rating%></p>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+<script>
+const students = document.getElementById('students');
+const mentors = document.getElementById('mentors');
+const peerLeaders = document.getElementById('peerLeaders');
+function show(type) {
+    students.hidden = (type != 'students');
+    mentors.hidden = (type != 'mentors');
+    peerLeaders.hidden = (type != 'peerLeaders');
+    window.history.pushState('', '', '?show=' + type);
+}
+let params = new URLSearchParams(window.location.search);
+if (params.has('show')) {
+    show(params.get('show'));
+}
+</script>
+  </body>
+  <%- include('../footer.ejs'); -%>
+</html>

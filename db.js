@@ -65,8 +65,8 @@ async function cancelSession(sessionId, studentId) {
     }
 }
 
-//A peer leader uses this function to accept a mentor applicaiton.
-async function acceptMentor(userObjectId) {
+//A peer leader uses this function to accept a mentor or peerLeader applicaiton.
+async function acceptUser(userObjectId, type) {
     try {
         const userCollection = globalDB.collection('users');
         let objectId;
@@ -77,15 +77,27 @@ async function acceptMentor(userObjectId) {
         }
         const user = await userCollection.findOne({ _id: objectId });
         if (user == null) return 'User not found.';
-        if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
-        if (user.isMentor) return 'That user is already a mentor.';
-        await userCollection.updateOne({ _id: objectId }, { $set: { isMentor: true }});
 
+        let emailHtml = '';
+        if (type == 'mentor') {
+            if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
+            if (user.isMentor) return 'That user is already a mentor.';
+            await userCollection.updateOne({ _id: objectId }, { $set: { isMentor: true }});
+            emailHtml = 'You have been accepted as a Peer2Peer mentor!';
+        } else if (type == 'peerLeader') {
+            if (!user.appliedPeerLeader) return 'That user has not applied to be a Peer leader.';
+            if (user.isPeerLeader) return 'That user is already a Peer Leader.';
+            await userCollection.updateOne({ _id: objectId }, { $set: { isPeerLeader: true }});
+            emailHtml = 'You have been accepted as a Peer2Peer Peer Leader!';
+        } else {
+            console.error('An invalid type was passed in. Expected "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong.';
+        }
         //automated email notifying mentor of acceptance
         const acceptanceEmail = {
             to:user.email,
-            subject:"Welcome to the Peer2Peer team!",
-            html:"You have been accepted as a Peer2Peer mentor!"
+            subject:'Welcome to the Peer2Peer team!',
+            html:emailHtml
         }
         emailer.transporter.sendMail(acceptanceEmail, error => {
             if (error) {
@@ -94,13 +106,13 @@ async function acceptMentor(userObjectId) {
         });
         return -1; //-1 means no error
     } catch (err) {
-        console.error('Error accepting mentor.', err);
-        return 'Error accepting mentor.';
+        console.error('Error accepting user.', err);
+        return 'Error accepting user.';
     }
 }
 
-//A peer leader uses this function to reejct a mentor applicaiton.
-async function rejectMentor(userObjectId) {
+//A peer leader uses this function to reject a mentor or peerLeader applicaiton.
+async function rejectUser(userObjectId, type) {
     try {
         const userCollection = globalDB.collection('users');
         let objectId;
@@ -111,13 +123,37 @@ async function rejectMentor(userObjectId) {
         }
         const user = await userCollection.findOne({ _id: objectId });
         if (user == null) return 'User not found.';
-        if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
-        if (user.isMentor) return 'That user is already a mentor.';
-        await userCollection.updateOne({ _id: objectId }, { $set: { appliedMentor: false }});
+
+        let emailHtml = '';
+        if (type == 'mentor') {
+            if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
+            if (user.isMentor) return 'That user is already a mentor.';
+            await userCollection.updateOne({ _id: objectId }, { $set: { appliedMentor: false }});
+            emailHtml = 'Your mentor application has been rejected.';
+        } else if (type == 'peerLeader') {
+            if (!user.appliedPeerLeader) return 'That user has not applied to be a Peer leader.';
+            if (user.isPeerLeader) return 'That user is already a Peer Leader.';
+            await userCollection.updateOne({ _id: objectId }, { $set: { appliedPeerLeader: false }});
+            emailHtml = 'Your Peer Leader application has been rejected';
+        } else {
+            console.error('An invalid type was passed in. Expected "mentor" or "peerLeader", but got ' + type);
+            return 'Something went wrong.';
+        }
+        //automated email notifying mentor of rejection
+        const rejectionEmail = {
+            to:user.email,
+            subject:'Peer2Peer Application',
+            html:emailHtml
+        }
+        emailer.transporter.sendMail(rejectionEmail, error => {
+            if (error) {
+                console.error('Error when sending rejection email.', error);
+            }
+        });
         return -1; //-1 means no error
     } catch (err) {
-        console.error('Error rejecting mentor.', err);
-        return 'Error rejecting mentor.';
+        console.error('Error rejecting user.', err);
+        return 'Error rejecting user.';
     }
 }
 
@@ -296,38 +332,37 @@ async function getSessions(type, googleId) {
     }
 }
 
-async function getAllMentors() {
+async function getAllUsers() {
     try {
         const userCollection = globalDB.collection('users');
-        let mentors = {
-            isMentor: [],
-            applied: []
-        };
+        let users = {
+            students: [],
+            appliedMentors: [],
+            mentors: [],
+            appliedPeerLeaders: [],
+            peerLeaders: []
+        }
         const cursor = await userCollection.find({
-            appliedMentor: true
+            $or: [
+                { isStudent: true },
+                { appliedMentor: true },
+                { appliedPeerLeader: true }
+            ]
         });
         await cursor.forEach((doc, err) => {
             if (err) {
-                console.error('Error when iterating over all mentors.', err);
-            } else { //Make sure a mentor does not mentor themself
-                const data = {
-                    name: doc.firstName + ' ' + doc.lastName,
-                    email: doc.email,
-                    grade: doc.grade,
-                    phone: doc.phone,
-                    school: doc.school,
-                    state: doc.state,
-                    availability: doc.availability,
-                    subjects: doc.subjects,
-                    rating: doc.hasOwnProperty('rating') ? doc.rating : 'Not yet rated.',
-                    id: doc._id //Note: This uses the ObjectId, NOT the googleId!
-                }
-                if (doc.isMentor) mentors.isMentor.push(data);
-                else if (doc.appliedMentor) mentors.applied.push(data);
-                else console.error('Error when iterating over all mentors. A user who has not applied to be mentor was found.');
+                console.error('Error when iterating over all users.', err);
+            } else {
+                if (doc.isStudent) users.students.push(doc);
+
+                if (doc.isMentor) users.mentors.push(doc);
+                else if (doc.appliedMentor) users.appliedMentors.push(doc);
+
+                if (doc.isPeerLeader) users.peerLeaders.push(doc);
+                else if (doc.appliedPeerLeader) users.appliedPeerLeaders.push(doc);
             }
         });
-        return mentors;
+        return users;
     } catch (err) {
         console.error('Error getting all mentors.', err);
     }
@@ -498,7 +533,7 @@ module.exports = {
     addSession, cancelSession,
     doneSession, acceptSession, rejectSession,
     getSessions,
-    getAllMentors, acceptMentor, rejectMentor,
+    getAllUsers, acceptUser, rejectUser,
     getMentors, getPeerLeaders,
     rateSession
 };
