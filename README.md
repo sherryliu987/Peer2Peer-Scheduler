@@ -11,9 +11,12 @@
  - [x] Cancel Sessions if not mentor/peerleader found
  - [x] Add footer
  - [x] Add way to accept/reject peerleader application
+ - [x] Add peerleader zoom links
+ - [ ] Add way for peerleaders to add zoom
  - [ ] Add emails
  - [ ] Add email confirmation
  - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
  - [ ] Fix header on small screens
  - [ ] Add weekly sessions
- - [ ] Add peerleader zoom links
+ - [ ] Make frontend nicer
+ - [ ] Add algorithm for picking peerLeaders

@@ -200,7 +200,9 @@ router.post('/peerleader', [
             school: req.body.school,
             phone: req.body.phone,
             availability: chosenTimes,
-            lastSession: Date.now() //Default last session of when they registered
+            lastSession: Date.now(), //Default last session of when they registered
+            zoomLink: '',
+            zoomPass: ''
         });
         res.redirect('/signup/applied/peerLeader');
     }

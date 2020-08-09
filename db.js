@@ -324,9 +324,17 @@ async function getSessions(type, googleId) {
                 const data = {
                     id: doc._id,
                     student: doc.student,
-                    mentor: doc.mentorConfirm ? doc.mentors[0].name : 'None Confirmed',
+                    mentor: doc.mentorConfirm ? doc.mentors[0] : {
+                        id: '',
+                        name: 'None Confirmed'
+                    },
                     mentorConfirm: doc.mentorConfirm,
-                    peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0].name : 'None Confirmed',
+                    peerLeader: doc.peerLeaderConfirm ? doc.peerLeaders[0] : {
+                        id: '',
+                        name: 'None Confirmed',
+                        zoomLink: 'None Confirmed',
+                        zoomPass: 'None Confirmed'
+                    },
                     peerLeaderConfirm: doc.peerLeaderConfirm,
                     dateTime: doc.dateTime,
                     subject: doc.subject,
@@ -450,7 +458,12 @@ async function getPeerLeaders(dateTime) {
             if (err) {
                 console.error('Error when iterating over peer leaders.', err);
             } else {
-                peerLeaders.push({ id: doc.googleId, name: `${doc.firstName} ${doc.lastName}`});
+                peerLeaders.push({
+                    id: doc.googleId,
+                    name: `${doc.firstName} ${doc.lastName}`,
+                    zoomLink: doc.zoomLink,
+                    zoomPass: doc.zoomPass
+                });
             }
         });
         return peerLeaders;

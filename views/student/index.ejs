@@ -25,11 +25,15 @@
     <button onclick="window.location.href='/logout'">Log out</button>
 
     <% function showSessionDetails(session) { %>
-            <p>Mentor: <%=session.mentor%></p>
-            <p>PeerLeader: <%=session.peerLeader%></p>
+            <p>Mentor: <%=session.mentor.name %></p>
+            <p>PeerLeader: <%=session.peerLeader.name %></p>
             <p>Subject: <%=session.subject%></p>
             <p class='datetime'><%=session.dateTime%></p>
             <p>Length: <%=session.length%> minutes</p>
+            <% if (session.peerLeaderConfirm) { %>
+                <p>Zoom link: <%= session.peerLeader.zoomLink %></p>
+                <p>Zoom Pass: <%= session.peerLeader.zoomPass %></p>
+            <% } %>
     <% } %>
 
     <% if (sessions.upcoming.length > 0) { %>
