@@ -1,5 +1,15 @@
 const ObjectId = require('mongodb').ObjectId;
 const emailer = require('./emails.js');
+const ejs = require('ejs');
+const fs = require('fs');
+
+//Loads all of the files from the emailTemplates directory and stores them in the templates object
+let templates = {};
+fs.readdirSync('./emailTemplates').forEach(file => {
+    const template = fs.readFileSync('./emailTemplates/' + file, 'utf8');
+    const fileName = file.split('.')[0];
+    templates[fileName] = template;
+});
 
 //Fetches a user from the db by their googleId
 async function findUser(googleId) {
@@ -78,17 +88,23 @@ async function acceptUser(userObjectId, type) {
         const user = await userCollection.findOne({ _id: objectId });
         if (user == null) return 'User not found.';
 
-        let emailHtml = '';
+        let emailData;
         if (type == 'mentor') {
             if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
             if (user.isMentor) return 'That user is already a mentor.';
             await userCollection.updateOne({ _id: objectId }, { $set: { isMentor: true }});
-            emailHtml = 'You have been accepted as a Peer2Peer mentor!';
+            emailData = {
+                name: user.firstName + ' ' + user.lastName,
+                type: 'mentor'
+            }
         } else if (type == 'peerLeader') {
             if (!user.appliedPeerLeader) return 'That user has not applied to be a Peer leader.';
             if (user.isPeerLeader) return 'That user is already a Peer Leader.';
             await userCollection.updateOne({ _id: objectId }, { $set: { isPeerLeader: true }});
-            emailHtml = 'You have been accepted as a Peer2Peer Peer Leader!';
+            emailData = {
+                name: user.firstName + ' ' + user.lastName,
+                type: 'peer leader'
+            }
         } else {
             console.error('An invalid type was passed in. Expected "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong.';
@@ -97,7 +113,7 @@ async function acceptUser(userObjectId, type) {
         const acceptanceEmail = {
             to:user.email,
             subject:'Welcome to the Peer2Peer team!',
-            html:emailHtml
+            html: ejs.render(templates.acceptance, emailData)
         }
         emailer.transporter.sendMail(acceptanceEmail, error => {
             if (error) {
@@ -124,17 +140,23 @@ async function rejectUser(userObjectId, type) {
         const user = await userCollection.findOne({ _id: objectId });
         if (user == null) return 'User not found.';
 
-        let emailHtml = '';
+        let emailData;
         if (type == 'mentor') {
             if (!user.appliedMentor) return 'That user has not applied to be a mentor.';
             if (user.isMentor) return 'That user is already a mentor.';
             await userCollection.updateOne({ _id: objectId }, { $set: { appliedMentor: false }});
-            emailHtml = 'Your mentor application has been rejected.';
+            emailData = {
+                name: user.firstName + ' ' + user.lastName,
+                type: 'mentor'
+            }
         } else if (type == 'peerLeader') {
             if (!user.appliedPeerLeader) return 'That user has not applied to be a Peer leader.';
             if (user.isPeerLeader) return 'That user is already a Peer Leader.';
             await userCollection.updateOne({ _id: objectId }, { $set: { appliedPeerLeader: false }});
-            emailHtml = 'Your Peer Leader application has been rejected';
+            emailData = {
+                name: user.firstName + ' ' + user.lastName,
+                type: 'peer leader'
+            }
         } else {
             console.error('An invalid type was passed in. Expected "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong.';
@@ -143,7 +165,7 @@ async function rejectUser(userObjectId, type) {
         const rejectionEmail = {
             to:user.email,
             subject:'Peer2Peer Application',
-            html:emailHtml
+            html: ejs.render(templates.rejection, emailData)
         }
         emailer.transporter.sendMail(rejectionEmail, error => {
             if (error) {
