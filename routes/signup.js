@@ -164,7 +164,9 @@ router.post('/peerleader', [
     check('email').isEmail().normalizeEmail().escape(),
     check('school').trim().notEmpty().escape(),
     check('phone').isMobilePhone().escape(),
-    check('state').isLength(2).escape()
+    check('state').isLength(2).escape(),
+    check('zoomLink').trim().notEmpty(),
+    check('zoomPass').trim().notEmpty()
 ], async (req, res) => {
     if (!req.user || req.user.isPeerLeader || req.user.appliedPeerLeader) {
         res.send('You have already applied or already a peer leader.');
@@ -201,8 +203,8 @@ router.post('/peerleader', [
             phone: req.body.phone,
             availability: chosenTimes,
             lastSession: Date.now(), //Default last session of when they registered
-            zoomLink: '',
-            zoomPass: ''
+            zoomLink: req.body.zoomLink,
+            zoomPass: req.body.zoomPass
         });
         res.redirect('/signup/applied/peerLeader');
     }

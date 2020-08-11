@@ -80,6 +80,20 @@
                 <% } %>
                 <br>
 
+                <label for='zoomLink'>Zoom Link: </label>
+                <input name='zoomLink' id='zoomLink' type='text' value='<%= values.zoomLink || "" %>' required>
+                <% if (errors.includes('zoomLink')) { %>
+                    <p class='err'>Please provide a URL or Room id to your zoom room.</p>
+                <% } %>
+                <br>
+
+                <label for='zoomPass'>Zoom Password: </label>
+                <input name='zoomPass' id='zoomPass' type='text' value='<%= values.zoomPass || "" %>' required>
+                <% if (errors.includes('zoomPass')) { %>
+                    <p class='err'>Please specify the password to your zoom room.</p>
+                <% } %>
+                <br>
+
                 <h2>Availability
                     <% if (errors.includes('times')) { %>
                         <p class='err'>Please choose at least 1 time when you are available.</p>

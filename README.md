@@ -12,7 +12,7 @@
  - [x] Add footer
  - [x] Add way to accept/reject peerleader application
  - [x] Add peerleader zoom links
- - [ ] Add way for peerleaders to add zoom
+ - [x] Add way for peerleaders to add zoom
  - [ ] Add emails
  - [ ] Add email confirmation
  - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
@@ -20,3 +20,5 @@
  - [ ] Add weekly sessions
  - [ ] Make frontend nicer
  - [ ] Add algorithm for picking peerLeaders
+ - [ ] Fix footer when scrolling
+ - [ ] Add button for PeerLeader to signup

@@ -78,7 +78,9 @@ app.post('/account', [
     check('email').isEmail().normalizeEmail().escape(),
     check('school').trim().notEmpty().escape(),
     check('phone').isMobilePhone().escape(),
-    check('state').isLength(2).escape()
+    check('state').isLength(2).escape(),
+    check('zoomLink').trim().notEmpty(),
+    check('zoomPass').trim().notEmpty()
 ], async (req, res) => {
     if (!req.user) res.send('You are not signed in.');
     else {
@@ -131,6 +133,10 @@ app.post('/account', [
         }
         if (req.user.isMentor) {
             data.subjects = chosenSubjects;
+        }
+        if (req.user.isPeerLeader) {
+            data.zoomLink = req.body.zoomLink;
+            data.zoomPass = req.body.zoomPass;
         }
         await db.updateUser(req.user.googleId, data);
         res.redirect('/');

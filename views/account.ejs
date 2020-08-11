@@ -69,12 +69,33 @@
                 <% if (errors.includes('phone')) { %>
                     <p class='err'>Please specify a phone number in the format 1234567890</p>
                 <% } %>
+                <br>
             <% } else { %>
                 <!--These are default options if these fields are not supposed to be filled out by the user. These are just here to stop an error when validating. They will never be used.-->
                 <select hidden name='grade'> <option value='-'>-</option> </select>
                 <input hidden name='state' type='text' value='--'required>
                 <input hidden name='school' type='text' value='-'required>
                 <input hidden name='phone' type='text' value='0000000000'required>
+            <% } %>
+
+            <% if (isPeerLeader) { %>
+                <label for='zoomLink'>Zoom Link: </label>
+                <input name='zoomLink' id='zoomLink' type='text' value='<%= values.zoomLink || "" %>' required>
+                <% if (errors.includes('zoomLink')) { %>
+                    <p class='err'>Please provide a URL or Room id to your zoom room.</p>
+                <% } %>
+                <br>
+
+                <label for='zoomPass'>Zoom Password: </label>
+                <input name='zoomPass' id='zoomPass' type='text' value='<%= values.zoomPass || "" %>' required>
+                <% if (errors.includes('zoomPass')) { %>
+                    <p class='err'>Please specify the password to your zoom room.</p>
+                <% } %>
+                <br>
+            <% } else {%>
+                <!--These are default options if these fields are not supposed to be filled out by the user. These are just here to stop an error when validating. They will never be used.-->
+                <input hidden name='zoomLink' type='text' value='-'required>
+                <input hidden name='zoomPass' type='text' value='-'required>
             <% } %>
 
             <% if (isMentor || isPeerLeader) { %>
@@ -103,7 +124,7 @@
                         <p class='err'>Please choose at least 1 subject you can tutor in.</p>
                     <% } %>
                 </h2>
-                
+
                 <% for (const heading in allSubjects) { %>
                     <h3><%= heading %></h3>
                     <% for (const subject of allSubjects[heading]) { %>
