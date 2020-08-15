@@ -57,7 +57,7 @@ async function addSession(sessionData) {
         ];
         const requestEmail = {
             to:ment.email,
-            subject:sessionData.dateTime + ' New Session Request',
+            subject:dateObject.toLocaleDateString() + ' New Session Request',
             html: ejs.render(templates.sessionRequest, emailData)
         }
         emailer.transporter.sendMail(requestEmail, error => {
