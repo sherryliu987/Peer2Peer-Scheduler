@@ -47,7 +47,7 @@ async function addSession(sessionData) {
     const dateObject = new Date(sessionData.dateTime);
     const readableDate = dateObject.toLocaleString();
 
-        for(const ment of sessionData.theMentors){
+    for(const ment of sessionData.theMentors){
         const emailData = [
             tutorName = ment.name,
             studentName = sessionData.student.name,
@@ -63,6 +63,23 @@ async function addSession(sessionData) {
         emailer.transporter.sendMail(requestEmail, error => {
             if (error) {
                 console.error('Error when sending mentor request email.', error);
+            }
+        });
+    }
+    for(const pl of sessionData.peerLeaders){
+        const emailData = [
+            plName = pl.name,
+            studentName = sessionData.student.name,
+            theDate = readableDate
+        ];
+        const requestEmail = {
+            to:pl.email,
+            subject:dateObject.toLocaleDateString() + ' New Peer Leader Request',
+            html: ejs.render(templates.sessionRequestPL, emailData)
+        }
+        emailer.transporter.sendMail(requestEmail, error => {
+            if (error) {
+                console.error('Error when sending peer leader request email.', error);
             }
         });
     }
@@ -512,7 +529,8 @@ async function getPeerLeaders(dateTime) {
                     id: doc.googleId,
                     name: `${doc.firstName} ${doc.lastName}`,
                     zoomLink: doc.zoomLink,
-                    zoomPass: doc.zoomPass
+                    zoomPass: doc.zoomPass,
+                    email:doc.email
                 });
             }
         });
