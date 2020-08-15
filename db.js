@@ -44,6 +44,29 @@ async function updateUser(googleId, data) {
 
 //Adds a session object to the sessions collection
 async function addSession(sessionData) {
+    const dateObject = new Date(sessionData.dateTime);
+    const readableDate = dateObject.toLocaleString();
+
+        for(const ment of sessionData.theMentors){
+        const emailData = [
+            tutorName = ment.name,
+            studentName = sessionData.student.name,
+            studentGrade = sessionData.student.grade,
+            topic = sessionData.subject,
+            theDate = readableDate
+        ];
+        const requestEmail = {
+            to:ment.email,
+            subject:sessionData.dateTime + ' New Session Request',
+            html: ejs.render(templates.sessionRequest, emailData)
+        }
+        emailer.transporter.sendMail(requestEmail, error => {
+            if (error) {
+                console.error('Error when sending mentor request email.', error);
+            }
+        });
+    }
+
     try {
         const sessionCollection = globalDB.collection('sessions');
         await sessionCollection.insertOne(sessionData);
@@ -259,10 +282,10 @@ async function rejectSession(sessionId, type, googleId) {
         const session = await sessionCollection.findOne({ _id: objectId });
         if (session == null) return 'Session not found.';
         if (session.cancelled) return 'Session has already been cancelled.';
-        if (session.done) return 'Session has already been complete.';
+        if (session.done) return 'Session has already been completed.';
         if (type == 'mentor') {
             if (session.mentorConfirm) return 'Session already confirmed.'
-            if (session.mentors[0].id != googleId) //Make sure it is asking this mentor to reject
+            if (session.mentors[0].id !== googleId) //Make sure it is asking this mentor to reject
                 return 'You are not authorized to reject this session.';
             let dbUpdates = {
                 $pop: { mentors: -1 }
@@ -270,6 +293,29 @@ async function rejectSession(sessionId, type, googleId) {
             if (session.mentors.length == 1) { //No mentor was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
                 //TODO Email student and peerleader (if they confirmed)
+                const emailData = [
+                    theSession = session,
+                ];
+                const plCancellationEmail = {
+                    to:session.peerLeader.email,
+                    subject:date.getDate() + ' SESSION CANCELLED',
+                    html: ejs.render(templates.cancellation, emailData)
+                }
+                emailer.transporter.sendMail(plCancellationEmail, error => {
+                    if (error) {
+                        console.error('Error when sending peer leader cancellation email.', error);
+                    }
+                });
+                const studentCancellationEmail = {
+                    to:session.student.email,
+                    subject:date.getDate() + ' SESSION CANCELLED',
+                    html: ejs.render(templates.cancellation, emailData)
+                }
+                emailer.transporter.sendMail(studentCancellationEmail, error => {
+                    if (error) {
+                        console.error('Error when sending student cancellation email.', error);
+                    }
+                });
             }
             //This removes the first element of the mentors list
             await sessionCollection.updateOne({ _id: objectId }, dbUpdates);
@@ -420,12 +466,13 @@ async function getMentors(dateTime, subject, studentId) {
         await cursor.forEach((doc, err) => {
             if (err) {
                 console.error('Error when iterating over mentors.', err);
-            } else if (doc.googleId != studentId) { //Make sure a mentor does not mentor themself
+            } else if (doc.googleId !== studentId) { //Make sure a mentor does not mentor themself
                 mentors.push({
                     id: doc.googleId,
                     name: `${doc.firstName} ${doc.lastName}`,
                     rating: doc.rating,
-                    lastSession: doc.lastSession
+                    lastSession: doc.lastSession,
+                    email:doc.email
                 });
             }
         });
@@ -433,10 +480,13 @@ async function getMentors(dateTime, subject, studentId) {
         mentors = mentors.slice(0, 3).map(mentor => {
             return {
                 id: mentor.id,
-                name: mentor.name
+                name: mentor.name,
+                email: mentor.email
             }
         });
-        return mentors.slice(0, 3);
+
+        mentors = mentors.slice(0, 3);
+        return mentors;
     } catch (err) {
         console.error('Error getting mentors.', err);
     }
