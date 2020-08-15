@@ -52,16 +52,21 @@ footer a{
     color:black;
 }
 
+body{
+    padding: 10px 10px 100px;
+    position:relative;
+}
+
 footer{
     position: absolute;
     bottom: 0;
     width: 100%;
+    height:100px;
     color: black;
     background-color: #96caeb;
     display:block;
     font-size: large;
     font-family: Consolas, serif;
-    padding:10px;
     text-align:center;
 }
 
