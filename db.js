@@ -358,6 +358,7 @@ async function rejectSession(sessionId, type, googleId) {
         if (session == null) return 'Session not found.';
         if (session.cancelled) return 'Session has already been cancelled.';
         if (session.done) return 'Session has already been completed.';
+        const readableDate = new Date(session.dateTime).toLocaleDateString();
         if (type == 'mentor') {
             if (session.mentorConfirm) return 'Session already confirmed.'
             let dbUpdates = {
@@ -367,7 +368,6 @@ async function rejectSession(sessionId, type, googleId) {
             }
             if (session.mentors.length == 1) { //No mentor was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
-                const readableDate = new Date(session.dateTime).toLocaleDateString();
                 if (session.peerLeaderConfirm && session.peerLeaders.length > 0) {
                     const peerleaderEmailData = {
                         name: session.peerLeaders[0].name,
@@ -412,9 +412,42 @@ async function rejectSession(sessionId, type, googleId) {
                     'peerLeaders': { 'id': googleId }
                 }
             }
-            if (session.peerLeaders.length == 1) { //No mentor was available, cancel the session.
+            if (session.peerLeaders.length == 1) { //No peerLeader was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
-                //TODO Email student and mentor (if they confirmed)
+                if (session.mentorConfirm && session.mentors.length > 0) {
+                    const emailData = {
+                        name: session.mentors[0].name,
+                        studentName: session.student.name,
+                        studentGrade: session.student.grade,
+                        subject: session.subject,
+                        date: readableDate
+                    };
+                    const email = {
+                        to: session.mentors[0].email,
+                        subject: readableDate + ' SESSION CANCELLED',
+                        html: ejs.render(templates.cancellation, emailData)
+                    }
+                    emailer.transporter.sendMail(email, error => {
+                        if (error) {
+                            console.error('Error when sending mentor cancellation email.', error);
+                        }
+                    });
+                }
+                const studentEmailData = {
+                    name: session.student.name,
+                    date: readableDate,
+                    subject: session.subject
+                }
+                const studentCancellationEmail = {
+                    to: session.student.email,
+                    subject: readableDate + ' SESSION CANCELLED',
+                    html: ejs.render(templates.studentCancellation, studentEmailData)
+                }
+                emailer.transporter.sendMail(studentCancellationEmail, error => {
+                    if (error) {
+                        console.error('Error when sending student cancellation email.', error);
+                    }
+                });
             }
             //This removes the first element of the peerLeaders list
             await sessionCollection.updateOne({ _id: objectId }, dbUpdates);

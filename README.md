@@ -16,7 +16,7 @@
  - [x] Fix footer when scrolling
  - [x] Allow all mentors for a session to view, accept and reject a session
  - [x] When a mentor or peerleader accepts, remove all the other options
- - [ ] Add emails (when all peerleaders reject)
+ - [ ] Add emails
  - [ ] Make frontend nicer
  - [ ] Add unsubscribe from emails button
  - [ ] Add algorithm for picking peerLeaders
