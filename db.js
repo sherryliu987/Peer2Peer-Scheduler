@@ -268,14 +268,32 @@ async function acceptSession(sessionId, type, googleId) {
         if (session.done) return 'Session has already been complete.';
         if (type == 'mentor') {
             if (session.mentorConfirm) return 'Session already confirmed.'
-            if (session.mentors[0].id != googleId) //Make sure it is asking this mentor to accept
-                return 'You are not authorized to accept this session.';
-            await sessionCollection.updateOne({ _id: objectId }, { $set: { mentorConfirm: true }});
+            for (let i = 0; i < session.mentors.length; i++) {
+                if (session.mentors[i].id == googleId) { //Make sure it is asking this mentor to accept
+                    await sessionCollection.updateOne({ _id: objectId }, {
+                        $set: {
+                            mentorConfirm: true,
+                            mentors: [ session.mentors[i] ]
+                            //This will remove all other mentors from the list, so only the one who accepted is in it
+                        }
+                    });
+                    break;
+                }
+            }
         } else if (type == 'peerLeader') {
             if (session.peerLeaderConfirm) return 'Session already confirmed.'
-            if (session.peerLeaders[0].id != googleId) //Make sure it is asking this mentor to accept
-                return 'You are not authorized to accept this session.';
-            await sessionCollection.updateOne({ _id: objectId }, { $set: { peerLeaderConfirm: true }});
+            for (let i = 0; i < session.peerLeaders.length; i++) {
+                if (session.peerLeaders[i].id == googleId) { //Make sure it is asking this peerleader to accept
+                    await sessionCollection.updateOne({ _id: objectId }, {
+                        $set: {
+                            peerLeaderConfirm: true,
+                            peerLeaders: [ session.peerLeaders[i] ]
+                            //This will remove all other peerLeaders from the list, so only the one who accepted is in it
+                        }
+                    });
+                    break;
+                }
+            }
         } else {
             console.error('Invalid type when accepting session. Expected "mentor" or "peerLeader", but got ' + type);
             return 'Something went wrong. An invalid type was passed in.';
@@ -304,10 +322,10 @@ async function rejectSession(sessionId, type, googleId) {
         if (session.done) return 'Session has already been completed.';
         if (type == 'mentor') {
             if (session.mentorConfirm) return 'Session already confirmed.'
-            if (session.mentors[0].id !== googleId) //Make sure it is asking this mentor to reject
-                return 'You are not authorized to reject this session.';
             let dbUpdates = {
-                $pop: { mentors: -1 }
+                $pull: { //Removes the mentor from the array
+                    'mentors': { 'id': googleId }
+                }
             }
             if (session.mentors.length == 1) { //No mentor was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
@@ -351,10 +369,10 @@ async function rejectSession(sessionId, type, googleId) {
             await sessionCollection.updateOne({ _id: objectId }, dbUpdates);
         } else if (type == 'peerLeader') {
             if (session.peerLeaderConfirm) return 'Session already confirmed.'
-            if (session.peerLeaders[0].id != googleId) //Make sure it is asking this mentor to reject
-                return 'You are not authorized to reject this session.';
             let dbUpdates = {
-                $pop: { peerLeaders: -1 }
+                $pull: { //Removes the peerleader from the array
+                    'peerLeaders': { 'id': googleId }
+                }
             }
             if (session.peerLeaders.length == 1) { //No mentor was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
@@ -387,9 +405,9 @@ async function getSessions(type, googleId) {
         if (type == 'student')
             cursor = await sessionCollection.find({ 'student.id': googleId });
         else if (type == 'mentor')
-            cursor = await sessionCollection.find({ 'mentors.0.id': {$eq: googleId} });
+            cursor = await sessionCollection.find({ 'mentors.id': {$eq: googleId} });
         else if (type == 'peerLeader')
-            cursor = await sessionCollection.find({ 'peerLeaders.0.id': {$eq: googleId} });
+            cursor = await sessionCollection.find({ 'peerLeaders.id': {$eq: googleId} });
         else
             console.error('Error when getting sessions. type should be "student", "mentor", or "peerLeader"');
 
