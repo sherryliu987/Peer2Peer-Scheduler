@@ -69,9 +69,9 @@ router.post('/requests', [
         });
         return;
     }
-    const theMentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
+    const mentors = await db.getMentors(dateMS, req.body.subject, req.user.googleId);
     const peerLeaders = await db.getPeerLeaders(dateMS);
-    if (theMentors.length == 0 || peerLeaders.length == 0) { //If no mentors/peerLeaders are available, ask them to
+    if (mentors.length == 0 || peerLeaders.length == 0) { //If no mentors/peerLeaders are available, ask them to
         // choose a different date/time
         res.render('student/request.ejs', {
             signedIn: (req.user != null),
@@ -87,9 +87,10 @@ router.post('/requests', [
         student: {
             id: req.user.googleId,
             name: req.user.firstName + ' ' + req.user.lastName,
-            grade: req.user.grade
+            grade: req.user.grade,
+            email: req.user.email
         },
-        theMentors,
+        mentors,
         mentorConfirm: false,
         peerLeaders,
         peerLeaderConfirm: false,

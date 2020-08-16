@@ -47,14 +47,15 @@ async function addSession(sessionData) {
     const dateObject = new Date(sessionData.dateTime);
     const readableDate = dateObject.toLocaleString();
 
-    for(const ment of sessionData.theMentors){
-        const emailData = [
-            tutorName = ment.name,
-            studentName = sessionData.student.name,
-            studentGrade = sessionData.student.grade,
-            topic = sessionData.subject,
-            theDate = readableDate
-        ];
+    for(const ment of sessionData.mentors){
+        const emailData = {
+            tutorName: ment.name,
+            studentName: sessionData.student.name,
+            studentGrade: sessionData.student.grade,
+            topic: sessionData.subject,
+            theDate: readableDate
+        };
+
         const requestEmail = {
             to:ment.email,
             subject:dateObject.toLocaleDateString() + ' New Session Request',
@@ -67,11 +68,11 @@ async function addSession(sessionData) {
         });
     }
     for(const pl of sessionData.peerLeaders){
-        const emailData = [
-            plName = pl.name,
-            studentName = sessionData.student.name,
-            theDate = readableDate
-        ];
+        const emailData = {
+            plName: pl.name,
+            studentName: sessionData.student.name,
+            theDate: readableDate
+        };
         const requestEmail = {
             to:pl.email,
             subject:dateObject.toLocaleDateString() + ' New Peer Leader Request',
@@ -108,6 +109,7 @@ async function cancelSession(sessionId, studentId) {
             return 'You are not authorized to cancel this session.';
 
         await sessionCollection.updateOne({ _id: objectId }, { $set: { cancelled: true }});
+        //TODO Send email to mentor/peerleader if they confirmed
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);
@@ -309,24 +311,35 @@ async function rejectSession(sessionId, type, googleId) {
             }
             if (session.mentors.length == 1) { //No mentor was available, cancel the session.
                 dbUpdates.$set = { cancelled: true };
-                //TODO Email student and peerleader (if they confirmed)
-                const emailData = [
-                    theSession = session,
-                ];
-                const plCancellationEmail = {
-                    to:session.peerLeader.email,
-                    subject:date.getDate() + ' SESSION CANCELLED',
-                    html: ejs.render(templates.cancellation, emailData)
-                }
-                emailer.transporter.sendMail(plCancellationEmail, error => {
-                    if (error) {
-                        console.error('Error when sending peer leader cancellation email.', error);
+                const readableDate = new Date(session.dateTime).toLocaleDateString();
+                if (session.peerLeaderConfirm && session.peerLeaders.length > 0) {
+                    const peerleaderEmailData = {
+                        name: session.peerLeaders[0].name,
+                        studentName: session.student.name,
+                        studentGrade: session.student.grade,
+                        subject: session.subject,
+                        date: readableDate
+                    };
+                    const plCancellationEmail = {
+                        to: session.peerLeaders[0].email,
+                        subject: readableDate + ' SESSION CANCELLED',
+                        html: ejs.render(templates.cancellation, peerleaderEmailData)
                     }
-                });
+                    emailer.transporter.sendMail(plCancellationEmail, error => {
+                        if (error) {
+                            console.error('Error when sending peer leader cancellation email.', error);
+                        }
+                    });
+                }
+                const studentEmailData = {
+                    name: session.student.name,
+                    date: readableDate,
+                    subject: session.subject
+                }
                 const studentCancellationEmail = {
-                    to:session.student.email,
-                    subject:date.getDate() + ' SESSION CANCELLED',
-                    html: ejs.render(templates.cancellation, emailData)
+                    to: session.student.email,
+                    subject: readableDate + ' SESSION CANCELLED',
+                    html: ejs.render(templates.studentCancellation, studentEmailData)
                 }
                 emailer.transporter.sendMail(studentCancellationEmail, error => {
                     if (error) {

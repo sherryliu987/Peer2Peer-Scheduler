@@ -13,7 +13,9 @@
  - [x] Add way to accept/reject peerleader application
  - [x] Add peerleader zoom links
  - [x] Add way for peerleaders to add zoom
- - [ ] Add emails
+ - [ ] Allow all mentors for a session to view, accept and reject a session
+ - [ ] When a mentor or peerleader accepts, remove all the other options
+ - [ ] Add emails (when student cancels, when all peerleaders reject)
  - [ ] Add email confirmation
  - [ ] Add more fields (Comments when rating, Why you would be a good mentor, etc)
  - [ ] Fix header on small screens
