@@ -109,7 +109,45 @@ async function cancelSession(sessionId, studentId) {
             return 'You are not authorized to cancel this session.';
 
         await sessionCollection.updateOne({ _id: objectId }, { $set: { cancelled: true }});
-        //TODO Send email to mentor/peerleader if they confirmed
+        const readableDate = new Date(session.dateTime).toLocaleDateString();
+        if (session.mentorConfirm && session.mentors.length > 0) {
+            const emailData = {
+                name: session.mentors[0].name,
+                studentName: session.student.name,
+                studentGrade: session.student.grade,
+                subject: session.subject,
+                date: readableDate
+            };
+            const email = {
+                to: session.mentors[0].email,
+                subject: readableDate + ' SESSION CANCELLED',
+                html: ejs.render(templates.cancellation, emailData)
+            }
+            emailer.transporter.sendMail(email, error => {
+                if (error) {
+                    console.error('Error when sending cancellation email to mentor', error);
+                }
+            });
+        }
+        if (session.peerLeaderConfirm && session.peerLeaders.length > 0) {
+            const emailData = {
+                name: session.peerLeaders[0].name,
+                studentName: session.student.name,
+                studentGrade: session.student.grade,
+                subject: session.subject,
+                date: readableDate
+            };
+            const email = {
+                to: session.peerLeaders[0].email,
+                subject: readableDate + ' SESSION CANCELLED',
+                html: ejs.render(templates.cancellation, emailData)
+            }
+            emailer.transporter.sendMail(email, error => {
+                if (error) {
+                    console.error('Error when sending cancellation email to peerLeader', error);
+                }
+            });
+        }
         return -1; //-1 means no error
     } catch (err) {
         console.error('Error cancelling session.', err);

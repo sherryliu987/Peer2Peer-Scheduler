@@ -110,7 +110,6 @@ router.post('/cancel/:id', async (req, res) => {
     const error = await db.cancelSession(req.params.id, req.user.googleId);
     if (error == -1) res.redirect('/student');
     else res.send(error);
-
 });
 
 module.exports = router; //Allows the router object to be accessed through require()
