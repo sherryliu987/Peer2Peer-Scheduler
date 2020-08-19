@@ -3,6 +3,16 @@
     padding: 0;
 }
 
+p{
+    font-family: Palatino, "Palatino LT STD", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-size: medium;
+}
+
+div.info{
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
 header {
     background-color: #235b38;
     margin-bottom: 5px;
@@ -90,6 +100,16 @@ img.footer-logo{
 
 img.home-logo{
     horiz-align: center;
+}
+
+img.sessionPic{
+    width:50%;
+    border: 10px solid #959595;
+    padding: 10px;
+}
+
+div.images{
+    padding:10%;
 }
 
 a:hover{

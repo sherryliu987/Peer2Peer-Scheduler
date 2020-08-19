@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>Peer2Peer Home</title>
 <style>
-<%- include('header-footer.css') -%>
+    <%- include('whole-website.css') -%>
 #content {
     margin-left: 10px;
     text-align: center;
@@ -15,7 +15,16 @@
         <%- include('header'); -%>
 
         <div id="content">
-            <h1>Welcome to Peer2Peer</h1>
+            <h1>Welcome to Peer2Peer!</h1>
+            <div class="info">
+            <p>We are a free online peer tutoring program connecting mentors with students during these uncertain
+                times. Since our first session in April 2020, we have conducted over 400 sessions building a
+                community of over 300 students. Check out our website <a href = https://peer2peercharlotte.weebly.com target="_blank"> HERE</a> for more
+                information.</p><br>
+            <p>This is the <b>Peer2Peer Session Scheduler </b>- a website designed to automate the 1-1 scheduling
+                    process by
+                pairing students up with mentors and peer leaders. Please email peer2peercharlotte@gmail.com with
+                any questions, concerns or issues. We look forward to working with you soon!</p></div>
             <img class = "home-logo" src='/fullLogo.png' alt='Peer2Peer Logo' width=100 height=100>
 
             <% if (!signedIn) { %>
@@ -44,6 +53,12 @@
                 <button class="btn btn-outline-primary" onclick="window.location.href='/logout'">Logout</button>
             <% } %>
         </div>
+    <div class="images">
+        <img style="float:left" class="sessionPic" src="/math-session.jpg" alt="math session">
+        <img style="float:right"class="sessionPic" src="/cs-session.jpg" alt="computer science session">
+        <img style="float:left" class="sessionPic" src="/math2-session.jpg" alt="math session">
+        <img class="sessionPic" src="/chinese-session.png" alt="chinese session">
+    </div>
     </body>
     <%- include('footer.ejs'); -%>
 </html>
