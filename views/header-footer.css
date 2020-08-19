@@ -84,6 +84,15 @@ footer{
     text-align:center;
 }
 
-img{
+img.footer-logo{
     float:left
+}
+
+img.home-logo{
+    horiz-align: center;
+}
+
+a:hover{
+    color: aliceblue;
+    background-color: #96caeb;
 }

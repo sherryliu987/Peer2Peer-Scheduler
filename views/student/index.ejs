@@ -16,13 +16,26 @@
   <body>
       <%- include('../header'); -%>
 
-    <h1>Hello Student!!!</h1>
-    <img src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
-    <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
+    <h1 style="align-self: center">Student Home Page</h1>
+    <img style = "align-self: center" src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
+    <br><button style = "width: 100px; align-self: center" class="btn btn-outline-primary" href="/account">My
+          Account</button>
+      <h4 style = "font-size:30px" id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
     <p>You are in grade <%= grade %>, go to <%= school %>  and live in the state <%= state %></p>
-    <button onclick="window.location.href='/student/requests'">Request a session</button>
-    <button onclick="window.location.href='/'">Main</button>
-    <button onclick="window.location.href='/logout'">Log out</button>
+
+      <div class="btn-toolbar" style="align-self: center" role="group" aria-label="Basic example">
+
+      <button style = "width: 150px; align-self: center" class="btn btn-outline-primary"
+              onclick="window
+      .location
+    .href='/student/requests'">Request a
+        session</button>
+    <button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window.location
+    .href='/'">Main</button>
+    <button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window.location
+    .href='/logout'">Log out</button>
+
+      </div>
 
     <% function showSessionDetails(session) { %>
             <p>Mentor: <%=session.mentor.name %></p>
