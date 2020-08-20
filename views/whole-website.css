@@ -84,13 +84,6 @@ div.content{
 }
 
 footer{
-    /*position:fixed;*/
-    /*left:0;*/
-    /*bottom:0;*/
-    /*width:100%;*/
-    /*position: absolute;*/
-    /*bottom: 0;*/
-    /*width: 100%;*/
     margin-top:auto;
     height:auto;
     color: black;
@@ -126,4 +119,23 @@ a:hover{
 
 a.active-page{
     background-color:#96caeb;
+}
+
+nav select{
+    display:none;
+    margin:auto;
+    background-color: #96caeb;
+    padding:7px;
+    align-self: center;
+}
+
+@media (max-width:850px){
+    #rightHeader {
+        display:none;
+    }
+    nav select{
+        display:inline-block;
+        horiz-align: center;
+        vertical-align: center;
+    }
 }

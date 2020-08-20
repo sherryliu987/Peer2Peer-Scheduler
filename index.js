@@ -65,9 +65,7 @@ app.get('/account', (req, res) => {
         if (req.user.isMentor || req.user.isPeerLeader)
             for (const avail of req.user.availability) values[avail] = true;
         if (req.user.isMentor)
-            for (const subject of req.user.subjects) values[subject] = true;
-        console.log("Rendering account page with acc value: " + acc);
-            res.render('account', {
+            for (const subject of req.user.subjects) values[subject] = true;res.render('account', {
             signedIn: (req.user != null),
             ...req.user,
             allSubjects,

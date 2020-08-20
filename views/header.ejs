@@ -41,5 +41,55 @@
                <%}%> href='/account'>Account</a>
             <a href='/logout'>Logout</a>
         <% } %>
+
+
     </div>
+    <nav>
+
+        <div>
+        <label>
+            <select onchange="location = this.value;">
+                <option value = "" selected = selected">
+
+                    <%if(typeof onMentorPage !== 'undefined' && onMentorPage){%>
+                        Mentor Home
+                    <%}else if(typeof onPLPage !== 'undefined' && onPLPage){%>
+                        Peer Leader Home
+                    <%}else if(typeof acc !== 'undefined' && acc){%>
+                        Account
+                    <%}else if(typeof onStudentPage !== 'undefined' && onStudentPage){%>
+                        Student Home
+                    <%}else{%>
+                        Menu
+                    <%}%>
+                </option>
+                <option value='/'>Home</option>
+                <% if (!signedIn) { %>
+                    <option value='/auth'>Sign up with Google</option>
+                <% } else { %>
+                    <% if (isStudent) { %>
+                        <option value='/student'>Student Home</option>
+                    <% } else { %>
+                        <option value='/signup/student'>Signup as Student</option>
+                    <% } %>
+
+                    <% if (isMentor) { %>
+                        <option value='/mentor'>Mentor Home</option>
+                    <% } else if (appliedMentor) { %>
+                        <option>Your Mentor application is being processed.</option>
+                    <% } else { %>
+                        <option value='/signup/mentor'>Apply for Mentor</option>
+                    <% } %>
+
+                    <% if (isPeerLeader) { %>
+                        <option value='/peerleader'>Peer Leader Home</option>
+                    <% } %>
+
+                    <option  value='/account'>Account</option>
+                    <option value='/logout'>Logout</option>
+                <% } %>
+            </select>
+        </label>
+        </div>
+    </nav>
 </header>
