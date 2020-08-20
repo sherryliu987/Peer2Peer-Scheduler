@@ -11,18 +11,21 @@
         <% } %>
     </div>
     <div id='rightHeader'>
-        <a href='/'>Home</a>
+        <a <%if(typeof home !== 'undefined' && home){%>class = "active-page"
+           <%}%>href='/'>Home</a>
         <% if (!signedIn) { %>
             <a href='/auth'>Sign up with Google</a>
         <% } else { %>
             <% if (isStudent) { %>
-                <a href='/student'>Student Home</a>
+                <a <%if(typeof onStudentPage !== 'undefined' && onStudentPage){%>class = "active-page"
+                   <%}%>href='/student'>Student Home</a>
             <% } else { %>
                 <a href='/signup/student'>Signup as Student</a>
             <% } %>
 
             <% if (isMentor) { %>
-                <a href='/mentor'>Mentor Home</a>
+                <a <%if(typeof onMentorPage !== 'undefined' && onMentorPage){%>class = "active-page"
+                   <%}%>href='/mentor'>Mentor Home</a>
             <% } else if (appliedMentor) { %>
                 <a>Your Mentor application is being processed.</a>
             <% } else { %>
@@ -30,10 +33,12 @@
             <% } %>
 
             <% if (isPeerLeader) { %>
-                <a href='/peerleader'>Peer Leader Home</a>
+                <a <%if(typeof onPLPage !== 'undefined' && onPLPage){%>class = "active-page"
+                   <%}%> href='/peerleader'>Peer Leader Home</a>
             <% } %>
 
-            <a href='/account'>Account</a>
+            <a <%if(typeof acc !== 'undefined' && acc){%>class = "active-page"
+               <%}%> href='/account'>Account</a>
             <a href='/logout'>Logout</a>
         <% } %>
     </div>

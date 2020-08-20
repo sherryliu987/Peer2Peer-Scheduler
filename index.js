@@ -30,9 +30,11 @@ app.use(express.static('static'));
 
 app.set('view engine', 'ejs'); //Allows us to render .ejs files
 app.get('/', (req, res) => {
+    const home = true
     res.render('index.ejs', {
         signedIn: (req.user != null),
-        ...req.user
+        ...req.user,
+        home
     });
 });
 app.use('/student', studentRouter); //When accessing a /student path, uses the routes from ./routes/student.js
@@ -56,6 +58,7 @@ app.get('/auth/callback', //Once a student signs in with google
     }
 );
 app.get('/account', (req, res) => {
+    const acc = true
     if (!req.user) res.redirect('/');
     else {
         let values = { ...req.user };
@@ -63,12 +66,14 @@ app.get('/account', (req, res) => {
             for (const avail of req.user.availability) values[avail] = true;
         if (req.user.isMentor)
             for (const subject of req.user.subjects) values[subject] = true;
-        res.render('account', {
+        console.log("Rendering account page with acc value: " + acc);
+            res.render('account', {
             signedIn: (req.user != null),
             ...req.user,
             allSubjects,
             values,
-            errors: []
+            errors: [],
+            acc
         });
     }
 });

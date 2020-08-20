@@ -15,10 +15,12 @@ router.use((req, res, next) => {
 
 router.get('/', async (req, res) => { //When a user accesses /user, display a custom page with ejs
     const sessions = await db.getSessions('student', req.user.googleId);
+    const onStudentPage = true;
     res.render('student/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,
-        sessions
+        sessions,
+        onStudentPage
     });
 });
 router.post('/rate/:id', async (req, res) => {
@@ -82,6 +84,16 @@ router.post('/requests', [
         });
         return;
     }
+
+    // const sessions = db.getSessions("student", req.user.id);
+    // console.log(sessions);
+    // for(const session of sessions){
+    //     console.log(session.dateTime , dateMS);
+    //     if(session.dateTime === dateMS){
+    //         console.log("SAME DATE TIME");
+    //     }
+    // }
+
 
     await db.addSession({
         student: {

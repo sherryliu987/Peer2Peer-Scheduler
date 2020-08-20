@@ -2,16 +2,20 @@ const express = require('express');
 const db = require('../db.js');
 const router = express.Router();
 
+const onPLPage = true;
+
 //Middleware to make sure any peerLeader trying to access the peerLeader pages is logged in
 router.use((req, res, next) => {
     if (req.user && req.user.isPeerLeader) next(); //If logged in, continue
     else res.redirect('/'); //If not logged in, send to main page
 });
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+
     res.render('peerLeader/index.ejs', {
         signedIn: (req.user != null),
-        ...req.user
+        ...req.user,
+        onPLPage
     });
 });
 
@@ -20,7 +24,8 @@ router.get('/users', async (req, res) => { //When a user accesses /peerleader, d
     res.render('peerLeader/users.ejs', {
         signedIn: (req.user != null),
         ...req.user,
-        users
+        users,
+        onPLPage
     });
 });
 router.post('/accept/mentor/:id', async (req, res) => {
@@ -49,7 +54,8 @@ router.get('/sessions', async (req, res) => { //When a user accesses /peerleader
     res.render('peerLeader/sessions.ejs', {
         signedIn: (req.user != null),
         ...req.user,
-        sessions
+        sessions,
+        onPLPage
     });
 });
 router.post('/sessions/accept/:id', async (req, res) => {

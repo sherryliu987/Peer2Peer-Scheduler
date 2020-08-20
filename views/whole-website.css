@@ -6,6 +6,13 @@
 p{
     font-family: Palatino, "Palatino LT STD", "Palatino Linotype", "Book Antiqua", Georgia, serif;
     font-size: medium;
+    align-self: center;
+    text-align: center;
+}
+
+button{
+    width:fit-content;
+    align-self: center;
 }
 
 div.info{
@@ -85,7 +92,7 @@ footer{
     /*bottom: 0;*/
     /*width: 100%;*/
     margin-top:auto;
-    height:100px;
+    height:auto;
     color: black;
     background-color: #96caeb;
     display:block;
@@ -115,4 +122,8 @@ div.images{
 a:hover{
     color: aliceblue;
     background-color: #96caeb;
+}
+
+a.active-page{
+    background-color:#96caeb;
 }

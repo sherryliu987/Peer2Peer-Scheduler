@@ -15,6 +15,9 @@
     <body>
         <%- include('header'); -%>
 
+        <% if(typeof acc !== 'undefined'){%><h1>ACCOUNT PAGE</h1><%}%>
+
+
         <div id="content">
             <h1>Account Details</h1>
 
@@ -82,14 +85,14 @@
                 <label for='zoomLink'>Zoom Link: </label>
                 <input name='zoomLink' id='zoomLink' type='text' value='<%= values.zoomLink || "" %>' required>
                 <% if (errors.includes('zoomLink')) { %>
-                    <p class='err'>Please provide a URL or Room id to your zoom room.</p>
+                    <p class='err'>Please provide a URL or Room id to your personal meeting room in ZOOM.</p>
                 <% } %>
                 <br>
 
                 <label for='zoomPass'>Zoom Password: </label>
                 <input name='zoomPass' id='zoomPass' type='text' value='<%= values.zoomPass || "" %>' required>
                 <% if (errors.includes('zoomPass')) { %>
-                    <p class='err'>Please specify the password to your zoom room.</p>
+                    <p class='err'>Please specify the password to your personal meeting room in ZOOM.</p>
                 <% } %>
                 <br>
             <% } else {%>

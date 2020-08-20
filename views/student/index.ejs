@@ -6,7 +6,7 @@
 <style>
 <%- include('../whole-website.css'); -%>
 .session {
-    background-color: #E0E0E0;
+    background-color: #a5c28a;
     padding: 5px;
     border-top: 2px solid black;
     border-bottom: 2px solid black;
@@ -15,37 +15,47 @@
   </head>
   <body>
       <%- include('../header'); -%>
-
     <h1 style="align-self: center">Student Home Page</h1>
+      <h1 style = "font-size:20px; align-self:center" id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName
+          %></h1>
     <img style = "align-self: center" src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
-    <br><button style = "width: 100px; align-self: center" class="btn btn-outline-primary" href="/account">My
-          Account</button>
-      <h4 style = "font-size:30px" id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
-    <p>You are in grade <%= grade %>, go to <%= school %>  and live in the state <%= state %></p>
-
+    <br><button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window
+      .location
+    .href='/account'">My
+          Account</button><br>
+      <div class="info">
+      <p>You have <%= sessions.upcoming.length%> upcoming session<%if(sessions.upcoming.length == 0 || sessions
+                  .upcoming.length > 1){%>s<%}%>!</p>
+      <p>You have been apart of <%= sessions.past.length%> session<%if(sessions.past.length == 0 || sessions
+                  .upcoming.length > 1){%>s<%}%> with Peer2Peer! <%if(sessions.past.length == 0){%> Request your
+          first session today by clicking the "Request a Session" button down below and filling in your desired date
+          and subject.<%}%></p><br>
+      </div>
       <div class="btn-toolbar" style="align-self: center" role="group" aria-label="Basic example">
 
-      <button style = "width: 150px; align-self: center" class="btn btn-outline-primary"
+      <button class="btn btn-outline-primary"
               onclick="window
       .location
     .href='/student/requests'">Request a
         session</button>
-    <button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window.location
+    <button class="btn btn-outline-primary" onclick="window.location
     .href='/'">Main</button>
-    <button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window.location
+    <button class="btn btn-outline-primary" onclick="window.location
     .href='/logout'">Log out</button>
 
-      </div>
+      </div><br>
 
     <% function showSessionDetails(session) { %>
             <p>Mentor: <%=session.mentor.name %></p>
-            <p>PeerLeader: <%=session.peerLeader.name %></p>
+            <p>Peer Leader: <%=session.peerLeader.name %></p>
             <p>Subject: <%=session.subject%></p>
             <p class='datetime'><%=session.dateTime%></p>
             <p>Length: <%=session.length%> minutes</p>
             <% if (session.peerLeaderConfirm) { %>
-                <p>Zoom link: <%= session.peerLeader.zoomLink %></p>
-                <p>Zoom Pass: <%= session.peerLeader.zoomPass %></p>
+                <p>Zoom Link: <a href='<%= session.peerLeader.zoomLink %>' target="_blank"><%= session.peerLeader
+                            .zoomLink
+                        %></a></p>
+                <p>Zoom Password: <%= session.peerLeader.zoomPass %></p>
             <% } %>
     <% } %>
 
@@ -54,8 +64,11 @@
         <% for (const session of sessions.upcoming) { %>
             <div class="session">
                 <% showSessionDetails(session); %>
-                <form action='/student/cancel/<%=session.id%>' method='POST'>
-                    <input type='submit' value='Cancel Session'>
+                <form style="text-align:center" action='/student/cancel/<%=session.id%>' method='POST'>
+
+                    <input style="background-color: #c24135; color:white" class="btn btn-outline-primary" type='submit'
+                           value='Cancel
+                    Session'>
                 </form>
             </div>
         <% } %>
@@ -66,7 +79,7 @@
             <div class="session">
                 <% showSessionDetails(session); %>
                 <% if (!session.ratings.hasOwnProperty('studentToMentor') &&
-                        !session.ratings.hasOwnProperty('studnetToSession')) { %>
+                        !session.ratings.hasOwnProperty('studentToSession')) { %>
                 <form action='/student/rate/<%=session.id%>' method='POST'>
                     <label for='mentorRating'>Mentor rating: </label>
                     <select id='mentorRating' name='mentorRating'>

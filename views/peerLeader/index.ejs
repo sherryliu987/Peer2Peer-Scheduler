@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Mentor Home</title>
+    <title>Peer Leader Home</title>
 <style>
 <%- include('../whole-website.css'); -%>
 </style>
@@ -10,7 +10,7 @@
   <body>
      <%- include('../header'); -%>
     <h1>Welcome, Peer Leader!</h1>
-    <img src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
+    <img src="<%= profileURL %>" alt="Profile Img" width="50px">
     <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
     <button onclick="window.location.href='/'">Main</button>
     <button onclick="window.location.href='/peerleader/sessions'">View Sessions</button>

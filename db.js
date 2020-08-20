@@ -473,7 +473,7 @@ async function getSessions(type, googleId) {
             cancelled: []
         }
         let cursor;
-        if (type == 'student')
+        if (type === 'student')
             cursor = await sessionCollection.find({ 'student.id': googleId });
         else if (type == 'mentor')
             cursor = await sessionCollection.find({ 'mentors.id': {$eq: googleId} });
