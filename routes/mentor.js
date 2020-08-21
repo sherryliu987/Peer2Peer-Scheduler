@@ -11,11 +11,13 @@ router.use((req, res, next) => {
 router.get('/', async (req, res) => { //When a user accesses /user, display a custom page with ejs
     const sessions = await db.getSessions('mentor', req.user.googleId);
     const onMentorPage = true;
+    const currentDate = new Date();
     res.render('mentor/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,
         sessions,
-        onMentorPage
+        onMentorPage,
+        currentDate
     });
 });
 router.post('/rate/:id', async (req, res) => {

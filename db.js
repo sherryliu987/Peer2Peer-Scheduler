@@ -475,9 +475,9 @@ async function getSessions(type, googleId) {
         let cursor;
         if (type === 'student')
             cursor = await sessionCollection.find({ 'student.id': googleId });
-        else if (type == 'mentor')
+        else if (type === 'mentor')
             cursor = await sessionCollection.find({ 'mentors.id': {$eq: googleId} });
-        else if (type == 'peerLeader')
+        else if (type === 'peerLeader')
             cursor = await sessionCollection.find({ 'peerLeaders.id': {$eq: googleId} });
         else
             console.error('Error when getting sessions. type should be "student", "mentor", or "peerLeader"');
@@ -498,7 +498,8 @@ async function getSessions(type, googleId) {
                         id: '',
                         name: 'None Confirmed',
                         zoomLink: 'None Confirmed',
-                        zoomPass: 'None Confirmed'
+                        zoomPass: 'None Confirmed',
+                        email:"None Confirmed"
                     },
                     peerLeaderConfirm: doc.peerLeaderConfirm,
                     dateTime: doc.dateTime,

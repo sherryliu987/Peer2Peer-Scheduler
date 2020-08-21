@@ -11,11 +11,12 @@ router.use((req, res, next) => {
 });
 
 router.get('/', async (req, res) => {
-
+    const sessions = await db.getSessions("peerLeader", req.user.id)
     res.render('peerLeader/index.ejs', {
         signedIn: (req.user != null),
         ...req.user,
-        onPLPage
+        onPLPage,
+        sessions
     });
 });
 

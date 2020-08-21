@@ -9,14 +9,28 @@
   </head>
   <body>
      <%- include('../header'); -%>
-    <h1>Welcome, Peer Leader!</h1>
-    <img src="<%= profileURL %>" alt="Profile Img" width="50px">
-    <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
-    <button onclick="window.location.href='/'">Main</button>
-    <button onclick="window.location.href='/peerleader/sessions'">View Sessions</button>
-    <button onclick="window.location.href='/peerleader/users'">View Users</button>
-    <button onclick="window.location.href='/logout'">Log out</button>
-
+     <h1 style = "font-size:20px; align-self:center" id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName
+       %> | Peer Leader</h1>
+     <img style = "align-self: center" src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
+     <br><button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window
+      .location
+    .href='/account'">My
+       Account</button><br>
+     <div class="info">
+       <p>You have <%= sessions.upcoming.length%> upcoming session<%if(sessions.upcoming.length == 0 || sessions
+                 .upcoming.length > 1){%>s<%}%> to supervise!</p>
+       <p>You have supervised <%= sessions.past.length%> session<%if(sessions.past.length == 0 || sessions
+                 .upcoming.length > 1){%>s<%}%> with Peer2Peer! <%if(sessions.past.length == 0){%> Oversee
+         your first session today by clicking "View Sessions" and accepting a session that works for you.
+         You can also see all of our mentors and students by clicking "View Users".<%}%></p><br>
+     </div>
+     <div class="btn-toolbar" style="align-self: center" role="group" aria-label="Basic example">
+    <button class="btn btn-outline-primary" onclick="window.location.href='/'">Main</button>
+    <button class="btn btn-outline-primary" onclick="window.location.href='/peerleader/sessions'">View Sessions</button>
+    <button class="btn btn-outline-primary" onclick="window.location.href='/peerleader/users'">View Users</button>
+    <button style = "background-color: #c24135;color:white;" class="btn btn-outline-primary" onclick="window.location
+    .href='/logout'">Log out</button>
+     </div>
   </body>
   <%- include('../footer.ejs'); -%>
 </html>

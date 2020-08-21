@@ -6,7 +6,7 @@
 <style>
 <%- include('../whole-website.css'); -%>
 .session {
-    background-color: #E0E0E0;
+    background-color: #a5c28a;
     padding: 5px;
     border-top: 2px solid black;
     border-bottom: 2px solid black;
@@ -15,10 +15,24 @@
   </head>
   <body>
      <%- include('../header'); -%>
-    <h1>Hello Mentor!</h1>
-    <img src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
-    <h4 id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName %></h4>
-    <p>You are in grade <%= grade %>, go to <%= school %>  and live in the state <%= state %></p>
+     <h1 style = "font-size:20px; align-self:center" id='welcomeMessage'>Welcome, <%= firstName + ' ' + lastName
+         %> | Mentor</h1>
+     <img style = "align-self: center" src="<%= profileURL %>" alt="Profile Img" width="50px"></img>
+     <br><button style = "width: 100px; align-self: center" class="btn btn-outline-primary" onclick="window
+      .location
+    .href='/account'">My
+         Account</button><br>
+     <div class="info">
+         <p>You have <%= sessions.upcoming.length%> upcoming session<%if(sessions.upcoming.length == 0 ||
+                     sessions
+                     .upcoming.length > 1){%>s<%}%> to tutor!</p>
+         <p>You have tutored <%= sessions.past.length%> session<%if(sessions.past.length == 0 || sessions
+                     .upcoming.length > 1){%>s<%}%> with Peer2Peer! <%if(sessions.past.length == 0){%> Mentor your
+             first session today by browsing your session requests below and accepting one that works for
+             you!<%}%></p><br>
+         <p class='volunteerhours'>HELLO</p>
+<!--         TODO: fix volunteer hours script at bottom-->
+     </div>
      <div class="btn-toolbar" style="align-self: center" role="group" aria-label="Basic example">
          <button class="btn btn-outline-primary" onclick="window.location.href='/'">Main</button>
          <button class="btn btn-outline-primary" onclick="window.location.href='/logout'">Log out</button>
@@ -26,7 +40,7 @@
 
     <% function showSessionDetails(session) { %>
         <p>Student: <%=session.student.name%>, in grade <%=session.student.grade%></p>
-        <p>PeerLeader: <%=session.peerLeader.name%></p>
+        <p>Peer Leader: <%=session.peerLeader.name%></p>
         <p>Subject: <%=session.subject%></p>
         <p class='datetime'><%=session.dateTime%></p>
         <p>Length: <%=session.length%> minutes</p>
@@ -42,16 +56,20 @@
             <div class="session">
                 <% showSessionDetails(session) %>
                 <% if (session.mentorConfirm) { %>
-                    <p>Session Confirmed!</p>
+                <p style = "color: #c24135;font-weight:bold" class='countdown'><%=session.dateTime%></p>
+                <p>Peer Leader Email: <%session.peerLeader.email%></p>
+<!--                TODO: fix peer leader email (right now returns nothing)-->
                 <% } else { %>
-                    <form action='/mentor/accept/<%=session.id%>' method='POST'>
-                        <input type='submit' value='Accept Session'>
+
+                    <form style = "padding:4px;text-align:center" action='/mentor/accept/<%=session.id%>'
+                          method='POST'>
+                        <input class="btn btn-outline-primary" type='submit' value='Accept Session'>
                     </form>
-                    <form action='/mentor/reject/<%=session.id%>' method='POST'>
-                        <input type='submit' value='Reject Session'>
+                    <form style = "padding:4px;text-align:center" action='/mentor/reject/<%=session.id%>' method='POST'>
+                        <input class="btn btn-outline-primary" type='submit' value='Reject Session'>
                     </form>
+                    </div>
                 <% } %>
-            </div>
         <% } %>
     <% } %>
     <% if (sessions.past.length > 0) { %>
@@ -92,6 +110,47 @@
         element.innerText = 'Date/Time: ' + new Date(parseInt(element.innerText)).toLocaleString();
     }
     </script>
+
+     <script>
+         const countdowns = document.getElementsByClassName('countdown');
+         for(const countdown of countdowns){
+             const numDays = Math.ceil((new Date() - new Date(parseInt(countdown.innerText)))/86400000);
+             if(numDays > 1){
+                 countdown.innerText = numDays + " days until your session! Please begin preparing a lesson plan for " +
+                     "the student and email your peer leader with any questions!"
+             }else if(numDays === 1){
+                 countdown.innerText = "1 day until your session! Get ready for your session by finding " +
+                     "appropriate materials and" +
+                     " make sure to contact your peer leader with any questions!"
+             }else{
+                 countdown.innerText = "Your session is TODAY! Please arrive 5 minutes early to get started on the " +
+                     "platform and contact your peer leader with any questions - look forward to seeing you there!"
+             }
+
+         }
+     </script>
+    <script>
+        const hours = document.getElementsByClassName('volunteerhours');
+        console.log("HELLO?");
+        for(const hour of hours){
+            for(const session of sessions.past){
+                let counter = 0;
+                if(session.length === "30"){
+                    counter += .5;
+                }else if(session.length === "45"){
+                    counter += .75;
+                }else{
+                    counter += 1;
+                }
+                console.log(counter);
+                hour.innerText = "You have tutored " + counter + " hours!";
+            }
+        }
+
+
+    </script>
+
+  </body>
 
   <%- include('../footer.ejs'); -%>
   </body>
