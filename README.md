@@ -21,4 +21,4 @@
  - [ ] Add unsubscribe from emails button
  - [ ] Add algorithm for picking peerLeaders
  - [ ] Add button for PeerLeader to signup
- - [ ] Fix header on small screens
+ - [x] Fix header on small screens
